@@ -11,5 +11,7 @@ package com.mycompany.productionmanagmentsystem;
 public interface controller {
     public void add();
     public void remove();
+    public void load_to_file();
+    public void save_to_file();
     public void find_by_id();
 }
