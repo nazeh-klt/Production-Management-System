@@ -8,20 +8,20 @@ package com.mycompany.productionmanagmentsystem;
  *
  * @author Admin
  */
+public class Item {
 
-public class Item{
     int id;
     String category;
     int price;
     int available_amount;
     int least_allowed_amount;
-    Item(int id, String category, int price, int available_amount, int least_allowed_amount){
+
+    Item(int id, String category, int price, int available_amount, int least_allowed_amount) {
         this.id = id;
         this.category = category;
         this.price = price;
         this.available_amount = available_amount;
         this.least_allowed_amount = least_allowed_amount;
-}
+    }
 
-    
 }

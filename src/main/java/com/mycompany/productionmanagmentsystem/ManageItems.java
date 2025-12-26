@@ -12,6 +12,7 @@ import java.awt.event.*;
  *
  * @author USER
  */
+
 public class ManageItems extends JFrame{
     ManageItems(){
         setTitle("Manage Items");

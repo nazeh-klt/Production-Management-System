@@ -1,0 +1,3 @@
+id, category, price, available_amount, least_allowed_amount
+0,Iron,100,500,50
+1,Iron,100,500,50

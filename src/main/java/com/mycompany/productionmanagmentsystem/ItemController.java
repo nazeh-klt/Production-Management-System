@@ -13,22 +13,24 @@ import java.io.*;
  */
 public class ItemController {
 
-    static Set<Item> Items;
+    static Set<Item> Items = new HashSet<>();
 
-    public void add(Item item) {
+    public static void add(Item item) {
         Items.add(item);
     }
 
-    public void remove(Item item) {
+    public static void remove(Item item) {
         Items.remove(item);
     }
 
-    public void load_to_file(Set l_items) {
+    public static void load_to_file() {
         try (BufferedReader ItemReader = new BufferedReader(new FileReader("items.csv"));) {
             String line;
+            ItemReader.readLine();
             while ((line = ItemReader.readLine())!= null) {
                 String[] attributes = line.split(",");
-                Item i = new Item(Integer.parseInt(attributes[0]),attributes[1],Integer.parseInt(attributes[2]),Integer.parseInt(attributes[3]),Integer.parseInt(attributes[4]));
+                ItemController.add(new Item(Integer.parseInt(attributes[0]),attributes[1],Integer.parseInt(attributes[2]),Integer.parseInt(attributes[3]),Integer.parseInt(attributes[4])));
+                
             }
 
 
@@ -38,18 +40,18 @@ public class ItemController {
 
     }
 
-    public void save_to_file(Set s_items) {
+    public static void save_to_file() {
         try (BufferedWriter ItemWriter = new BufferedWriter(new FileWriter("items.csv"));) {
             ItemWriter.write("id, category, price, available_amount, least_allowed_amount");
             for (Item item : Items) {
-                ItemWriter.write('\n' + item.id + "" + item.category + "" + item.price + "" + "" + item.available_amount + "" + item.least_allowed_amount);
+                ItemWriter.write("\n" + item.id + "," + item.category + "," + item.price + "," + item.available_amount + "," + item.least_allowed_amount);
             }
         } catch (Exception e) {
             System.out.println("1");
         }
     }
 
-    public void find_by_id(int id) {
+    public static void find_by_id(int id) {
     }
 
 }
