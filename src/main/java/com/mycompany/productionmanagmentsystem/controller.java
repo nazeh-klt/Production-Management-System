@@ -8,7 +8,7 @@ package com.mycompany.productionmanagmentsystem;
  *
  * @author USER
  */
-public interface controller {
+public interface Controller {
     public void add();
     public void remove();
     public void load_to_file();

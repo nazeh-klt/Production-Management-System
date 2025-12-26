@@ -8,9 +8,16 @@ package com.mycompany.productionmanagmentsystem;
  *
  * @author USER
  */
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
 public class ProductionManagmentSystem {
 
     public static void main(String[] args) {
         System.out.println("Hello World!");
+        ManageItems m = new ManageItems();
+        //ManageTasks t = new ManageTasks();
     }
 }
