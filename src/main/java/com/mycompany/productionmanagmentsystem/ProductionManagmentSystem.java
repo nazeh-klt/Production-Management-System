@@ -22,8 +22,8 @@ public class ProductionManagmentSystem {
         //ManageItems m = new ManageItems();
         //ManageTasks t = new ManageTasks();
 
-        ItemController.load_to_file();
-        for(Item i:ItemController.Items){
+        ItemController.load_from_file();
+        for(Item i:ItemController.items){
             System.out.println(i.price + " ");
         }
         

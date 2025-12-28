@@ -12,6 +12,7 @@ public class Item {
 
     static int last_id = 0;
     int id;
+    String name;
     String category;
     int price;
     int available_amount;
@@ -19,6 +20,7 @@ public class Item {
 
         Item(int id, String name, String category, int price, int available_amount, int least_allowed_amount) {
         this.id = id;
+        this.name = name;
         last_id = Math.max(id, last_id);
         this.category = category;
         this.price = price;
@@ -29,6 +31,7 @@ public class Item {
     Item(String category, String name, int price, int available_amount, int least_allowed_amount) {
         this.id = last_id;
         last_id++;
+        this.name = name;
         this.category = category;
         this.price = price;
         this.available_amount = available_amount;
