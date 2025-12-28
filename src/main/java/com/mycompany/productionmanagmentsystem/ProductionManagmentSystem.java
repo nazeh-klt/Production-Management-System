@@ -19,13 +19,8 @@ public class ProductionManagmentSystem {
 
     public static void main(String[] args) {
         System.out.println("Hello World!");
-        //ManageItems m = new ManageItems();
-        //ManageTasks t = new ManageTasks();
-
         ItemController.load_to_file();
-        for(Item i:ItemController.Items){
-            System.out.println(i.price + " ");
-        }
-        
+        ManageItems m = new ManageItems();
+        //ManageTasks t = new ManageTasks();
     }
 }

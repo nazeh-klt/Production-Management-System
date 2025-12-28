@@ -7,6 +7,7 @@ package com.mycompany.productionmanagmentsystem;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
 
 /**
  *
@@ -73,11 +74,15 @@ public class ManageItems extends JFrame{
         this.add(save_items);
         
         
-        String[][] data = {
-            { "0", "dimond", "stones", "1000000", "10", "5" }
-        };
-        String[] columnNames = { "id", "Name", "Category", "Price", "available", "minimum amount" };
-        JTable table = new JTable(data, columnNames);
+        ArrayList<String[]> data = new ArrayList<String[]>();
+        for(Item i:ItemController.items){
+            String[] s = {Integer.toString(i.id), /*i.name,*/ i.category, Integer.toString(i.price), Integer.toString(i.available_amount), Integer.toString(i.least_allowed_amount)};
+            data.add(s);
+        }
+        String[][] data2 = data.toArray(new String[data.size()][5]);
+        
+        String[] columnNames = { "id",  "Category", "Price", "available", "minimum amount" };
+        JTable table = new JTable(data2, columnNames);
         table.setDefaultEditor(Object.class, null);
         table.setDefaultEditor(Number.class, null);
         table.setDefaultEditor(Boolean.class, null);

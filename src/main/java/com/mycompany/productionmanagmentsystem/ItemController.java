@@ -11,16 +11,17 @@ import java.io.*;
  *
  * @author Admin
  */
+
 public class ItemController {
 
-    static Set<Item> Items = new HashSet<>();
+    static Set<Item> items = new HashSet<>();
 
     public static void add(Item item) {
-        Items.add(item);
+        items.add(item);
     }
 
     public static void remove(Item item) {
-        Items.remove(item);
+        items.remove(item);
     }
 
     public static void load_to_file() {
@@ -43,11 +44,11 @@ public class ItemController {
     public static void save_to_file() {
         try (BufferedWriter ItemWriter = new BufferedWriter(new FileWriter("items.csv"));) {
             ItemWriter.write("id, category, price, available_amount, least_allowed_amount");
-            for (Item item : Items) {
+            for (Item item : items) {
                 ItemWriter.write("\n" + item.id + "," + item.category + "," + item.price + "," + item.available_amount + "," + item.least_allowed_amount);
             }
         } catch (Exception e) {
-            System.out.println("1");
+
         }
     }
 
