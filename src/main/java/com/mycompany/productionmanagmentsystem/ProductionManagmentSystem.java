@@ -19,8 +19,12 @@ public class ProductionManagmentSystem {
 
     public static void main(String[] args) {
         System.out.println("Hello World!");
-        ItemController.load_to_file();
-        ManageItems m = new ManageItems();
+        //ManageItems m = new ManageItems();
         //ManageTasks t = new ManageTasks();
+
+        ItemController.load_from_file();
+        for(Item i:ItemController.items){
+            System.out.println(i.price + " ");
+        }
     }
 }
