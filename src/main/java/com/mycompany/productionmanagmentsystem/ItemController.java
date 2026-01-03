@@ -60,5 +60,13 @@ public class ItemController {
         return null;
 
     }
-
+    public static Set<Item> filter_by_category(String category){
+        Set<Item> found_items = new HashSet<>();
+        for(Item item: items){
+            if (item.category==category){
+                found_items.add(item);
+            }  
+        }
+        return found_items;
+    }
 }
