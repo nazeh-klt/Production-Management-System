@@ -19,8 +19,8 @@ public class ItemController {
         items.add(new Item(category,name,price,available_amount,least_allowed_amount));
     }
 
-    public static void remove(String category, String name,int price, int available_amount, int least_allowed_amount) {
-        items.remove(new Item(category,name,price,available_amount,least_allowed_amount));
+    public static void remove(int id) {
+        items.remove(find_by_id(id));
     }
 
     public static void load_from_file() {
@@ -51,7 +51,14 @@ public class ItemController {
         }
     }
 
-    public static void find_by_id(int id) {
+    public static Item find_by_id(int id) {
+        for(Item item: items){
+            if (id==item.id){
+                return item;
+            }
+        }
+        return null;
+
     }
 
 }
