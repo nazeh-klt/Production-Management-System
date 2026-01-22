@@ -1,3 +1,3 @@
-id, category, price, available_amount, least_allowed_amount
-0,Iron,100,500,50
-1,Iron,100,500,50
+id, name, category, price, available_amount, least_allowed_amount
+0,iron plate,Iron,100,500,50
+1,silver alloy,silver,100,500,50

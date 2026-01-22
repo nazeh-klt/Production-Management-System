@@ -31,12 +31,9 @@ public class ItemController {
             while ((line = ItemReader.readLine())!= null) {
                 String[] attributes = line.split(",");
                 items.add(new Item(Integer.parseInt(attributes[0]),attributes[1],attributes[2],Integer.parseInt(attributes[3]),Integer.parseInt(attributes[4]),Integer.parseInt(attributes[5])));
-                
             }
-
-
         } catch (Exception e) {
-
+            System.out.println(e.getMessage());
         }
 
     }

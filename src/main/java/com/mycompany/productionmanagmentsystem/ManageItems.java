@@ -16,6 +16,7 @@ import java.util.*;
 
 public class ManageItems extends JFrame{
     ManageItems(){
+        ManageItems frame = this;
         setTitle("Manage Items");
         setSize(900, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -97,9 +98,62 @@ public class ManageItems extends JFrame{
         add_item.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+                JFrame add = new JFrame();
+                add.setTitle("Simple Form - FlowLayout");
+                add.setSize(400, 400);
+                add.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+                add.setLayout(new GridLayout(6, 2, 10, 10));
+            
+                add.add(new JLabel("Name:"));
+                JTextField data_name = new JTextField(20);
+                add.add(data_name);
                 
+                add.add(new JLabel("Category:"));
+                JTextField data_category = new JTextField(20);
+                add.add(data_category);
+                
+                add.add(new JLabel("Price:"));
+                JTextField data_price = new JTextField(20);
+                add.add(data_price);
+                
+                add.add(new JLabel("available amount:"));
+                JTextField data_available_amount = new JTextField(20);
+                add.add(data_available_amount);
+                
+                add.add(new JLabel("least allowed amount:"));
+                JTextField data_least_allowd = new JTextField(20);
+                add.add(data_least_allowd);
+                
+                JButton save_bt = new JButton("save");
+                add.add(save_bt);
+                
+                add.setVisible(true);
+                
+                add.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        new ManageItems();
+                        add.dispose();
+                    }
+                });
+                
+                save_bt.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        try{
+                            ItemController.add(data_category.getText(), data_name.getText(), Integer.parseInt(data_price.getText()), Integer.parseInt(data_available_amount.getText()), Integer.parseInt(data_least_allowd.getText()));
+                            new ManageItems();
+                            add.dispose();
+                        }
+                        catch(NumberFormatException  ex){
+                            System.out.println(ex);
+                        }
+                    }
+                });
             }
-        });
         
+    });
+    
     }
 }
