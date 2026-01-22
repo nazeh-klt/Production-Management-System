@@ -4,6 +4,8 @@
  */
 package com.mycompany.productionmanagmentsystem;
 
+import java.util.HashMap;
+
 /**
  *
  * @author Admin
@@ -13,6 +15,7 @@ public class Product {
     static int last_id = 0;
     int id;
     String name;
+    HashMap<Item, Integer> required_items = new HashMap<>();
 
     Product(int id, String name) {
         this.id = id;
@@ -27,4 +30,12 @@ public class Product {
 
     }
 
+    public void add(int id, int min_req) {
+        required_items.put(ItemController.find_by_id(id), min_req);
+
+    }
+
+    public void add_full_hash(HashMap<Item, Integer> m) {
+        required_items = m;
+    }
 }

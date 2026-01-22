@@ -28,7 +28,11 @@ public class Item {
         this.least_allowed_amount = least_allowed_amount;
     }
 
+<<<<<<< HEAD
     Item(String category, String name, int price, int available_amount, int least_allowed_amount) {
+=======
+    Item(String name, String category, int price, int available_amount, int least_allowed_amount) {
+>>>>>>> a3cdc63cde4916b42063a6954516af7ebe6e2711
         this.id = last_id;
         last_id++;
         this.name = name;
