@@ -18,16 +18,16 @@ public class Item {
     int available_amount;
     int least_allowed_amount;
 
-        Item(int id, String name, String category, int price, int available_amount, int least_allowed_amount) {
+    Item(int id, String name, String category, int price, int available_amount, int least_allowed_amount) {
         this.id = id;
         this.name = name;
         last_id = Math.max(id, last_id);
         this.category = category;
         this.price = price;
         this.available_amount = available_amount;
-        this.least_allowed_amount = least_allowed_amount;}
-        
-        
+        this.least_allowed_amount = least_allowed_amount;
+    }
+
     Item(String name, String category, int price, int available_amount, int least_allowed_amount) {
         this.id = last_id;
         last_id++;
@@ -37,8 +37,5 @@ public class Item {
         this.available_amount = available_amount;
         this.least_allowed_amount = least_allowed_amount;
     }
-
-
-
 
 }

@@ -43,8 +43,6 @@ public class ProductController {
                 current_product = product;
             }
         }
-
-        
         int current_value;
         if (is_inside) {
             current_value = products.get(current_product);
@@ -69,7 +67,7 @@ public class ProductController {
             }
 
         } catch (Exception e) {
-
+            System.out.println(e.getMessage());
         }
 
     }
@@ -81,7 +79,7 @@ public class ProductController {
                 ProductWriter.write("\n" + product.id + "," + product.name);
             }
         } catch (Exception e) {
-            System.out.println("1");
+            System.out.println(e.getMessage());
         }
     }
 
