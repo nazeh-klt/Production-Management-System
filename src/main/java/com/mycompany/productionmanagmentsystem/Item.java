@@ -28,7 +28,7 @@ public class Item {
         this.least_allowed_amount = least_allowed_amount;}
         
         
-    Item(String category, String name, int price, int available_amount, int least_allowed_amount) {
+    Item(String name, String category, int price, int available_amount, int least_allowed_amount) {
         this.id = last_id;
         last_id++;
         this.name = name;

@@ -15,8 +15,8 @@ public class ItemController {
 
     static Set<Item> items = new HashSet<>();
 
-    public static void add(String category, String name, int price, int available_amount, int least_allowed_amount) {
-        items.add(new Item(category,name,price,available_amount,least_allowed_amount));
+    public static void add(String name, String category, int price, int available_amount, int least_allowed_amount) {
+        items.add(new Item(name,category,price,available_amount,least_allowed_amount));
     }
 
     public static void remove(int id) {
@@ -69,4 +69,38 @@ public class ItemController {
         }
         return found_items;
     }
+    
+        public static Set<Item> filter_by_name(String name){
+        Set<Item> found_items = new HashSet<>();
+        for(Item item: items){
+            if (item.name==name){
+                found_items.add(item);
+            }  
+        }
+        return found_items;
+    }
+        public static Set<Item> filter_by_state(int state){
+        Set<Item> found_items = new HashSet<>();
+        for(Item item: items){
+            if (state == 0 && (item.available_amount > item.least_allowed_amount)) {
+                found_items.add(item);
+            }  
+            else if(state == 1 && (item.available_amount == 0)){
+                found_items.add(item);
+            }
+            else if(state == 2 && (item.available_amount < item.least_allowed_amount)){
+                found_items.add(item);
+            }  
+        }
+        return found_items;
+    }
+    
 }
+
+
+
+/*
+    0 = available 
+    1 = run out
+    2 = < 
+*/
