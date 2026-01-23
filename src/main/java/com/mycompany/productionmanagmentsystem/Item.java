@@ -29,8 +29,8 @@ public class Item {
     }
 
     Item(String name, String category, int price, int available_amount, int least_allowed_amount) {
-        this.id = last_id;
         last_id++;
+        this.id = last_id;
         this.name = name;
         this.category = category;
         this.price = price;

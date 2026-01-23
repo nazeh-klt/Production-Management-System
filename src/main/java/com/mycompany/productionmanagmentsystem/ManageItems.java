@@ -7,6 +7,7 @@ package com.mycompany.productionmanagmentsystem;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
 
 /**
  *
@@ -15,6 +16,7 @@ import java.awt.event.*;
 
 public class ManageItems extends JFrame{
     ManageItems(){
+        ManageItems frame = this;
         setTitle("Manage Items");
         setSize(900, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -26,13 +28,13 @@ public class ManageItems extends JFrame{
         add_item.setBounds(10, 10, 100, 30);
         this.add(add_item);
         
-        JButton delete_b = new JButton("Edit Selected Item");
-        delete_b.setBounds(10, 50, 150, 30);
-        this.add(delete_b);
+        JButton edit_b = new JButton("Edit Selected Item");
+        edit_b.setBounds(10, 50, 150, 30);
+        this.add(edit_b);
         
-        JButton edit_b = new JButton("Delete Selected Item");
-        edit_b.setBounds(10, 90, 150, 30);
-        this.add(edit_b); 
+        JButton delete_b = new JButton("Delete Selected Item");
+        delete_b.setBounds(10, 90, 150, 30);
+        this.add(delete_b); 
         
         //filter by name
         JLabel filter_name  = new JLabel("Filter By Name");
@@ -73,11 +75,15 @@ public class ManageItems extends JFrame{
         this.add(save_items);
         
         
-        String[][] data = {
-            { "0", "dimond", "stones", "1000000", "10", "5" }
-        };
-        String[] columnNames = { "id", "Name", "Category", "Price", "available", "minimum amount" };
-        JTable table = new JTable(data, columnNames);
+        ArrayList<String[]> data = new ArrayList<String[]>();
+        for(Item i:ItemController.items){
+            String[] s = {Integer.toString(i.id), i.name, i.category, Integer.toString(i.price), Integer.toString(i.available_amount), Integer.toString(i.least_allowed_amount)};
+            data.add(s);
+        }
+        String[][] data2 = data.toArray(new String[data.size()][5]);
+        
+        String[] columnNames = { "id", "Name",  "Category", "Price", "available", "minimum amount" };
+        JTable table = new JTable(data2, columnNames);
         table.setDefaultEditor(Object.class, null);
         table.setDefaultEditor(Number.class, null);
         table.setDefaultEditor(Boolean.class, null);
@@ -92,9 +98,70 @@ public class ManageItems extends JFrame{
         add_item.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+                JFrame add = new JFrame();
+                add.setTitle("Simple Form - FlowLayout");
+                add.setSize(400, 400);
+                add.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+                add.setLayout(new GridLayout(6, 2, 10, 10));
+            
+                add.add(new JLabel("Name:"));
+                JTextField data_name = new JTextField(20);
+                add.add(data_name);
                 
+                add.add(new JLabel("Category:"));
+                JTextField data_category = new JTextField(20);
+                add.add(data_category);
+                
+                add.add(new JLabel("Price:"));
+                JTextField data_price = new JTextField(20);
+                add.add(data_price);
+                
+                add.add(new JLabel("available amount:"));
+                JTextField data_available_amount = new JTextField(20);
+                add.add(data_available_amount);
+                
+                add.add(new JLabel("least allowed amount:"));
+                JTextField data_least_allowd = new JTextField(20);
+                add.add(data_least_allowd);
+                
+                JButton save_bt = new JButton("save");
+                add.add(save_bt);
+                
+                add.setVisible(true);
+                
+                add.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        new ManageItems();
+                        add.dispose();
+                    }
+                });
+                
+                save_bt.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        try{
+                            ItemController.add( data_name.getText(), data_category.getText(), Integer.parseInt(data_price.getText()), Integer.parseInt(data_available_amount.getText()), Integer.parseInt(data_least_allowd.getText()));
+                            new ManageItems();
+                            add.dispose();
+                        }
+                        catch(NumberFormatException  ex){
+                            System.out.println(ex);
+                        }
+                    }
+                });
             }
+        
+    });
+    
+        delete_b.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        System.out.println(data2[table.getSelectedRow()][1]);
+                    }
         });
+        
         
     }
 }
