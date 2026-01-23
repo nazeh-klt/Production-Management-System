@@ -23,6 +23,7 @@ public class ProductionManagmentSystem  {
         ItemController.load_from_file();
         
         ManageItems m = new ManageItems();
+        m.setVisible(true);
         //ManageTasks t = new ManageTasks();
         
     }

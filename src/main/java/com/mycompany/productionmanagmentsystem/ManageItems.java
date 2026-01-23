@@ -1,167 +1,267 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.productionmanagmentsystem;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.util.Set;
 
-/**
- *
- * @author USER
- */
-
-public class ManageItems extends JFrame{
-    ManageItems(){
-        ManageItems frame = this;
-        setTitle("Manage Items");
-        setSize(900, 600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); // Center the window
-        setResizable(false);
-        setLayout(null);
-        
-        JButton add_item = new JButton("Add Item");
-        add_item.setBounds(10, 10, 100, 30);
-        this.add(add_item);
-        
-        JButton edit_b = new JButton("Edit Selected Item");
-        edit_b.setBounds(10, 50, 150, 30);
-        this.add(edit_b);
-        
-        JButton delete_b = new JButton("Delete Selected Item");
-        delete_b.setBounds(10, 90, 150, 30);
-        this.add(delete_b); 
-        
-        //filter by name
-        JLabel filter_name  = new JLabel("Filter By Name");
-        JButton filter_name_button = new JButton("filter");
-        JTextField filter_name_input  = new JTextField("");
-        filter_name.setBounds(10, 150, 150, 30);
-        filter_name_button.setBounds(120, 150, 70, 30);
-        filter_name_input.setBounds(10, 190, 180, 30);
-        this.add(filter_name_input);
-        this.add(filter_name);
-        this.add(filter_name_button); 
-        
-        //filter by category
-        JLabel filter_c  = new JLabel("Filter By Category");
-        JButton filter_c_button = new JButton("filter");
-        JTextField filter_c_input  = new JTextField("");
-        filter_c.setBounds(10, 250, 150, 30);
-        filter_c_button.setBounds(120, 250, 70, 30);
-        filter_c_input.setBounds(10, 290, 180, 30);
-        this.add(filter_c);
-        this.add(filter_c_button); 
-        this.add(filter_c_input);
-        
-        //filter by state
-        JLabel filter_s  = new JLabel("Filter By State");
-        JButton filter_s_button = new JButton("filter");
-        String[] options = {"available", "run out", "below the limit"};
-        JComboBox<String>  comboBox = new JComboBox<>(options);
-        filter_s.setBounds(10, 350, 150, 30);
-        filter_s_button.setBounds(120, 350, 70, 30);
-        comboBox.setBounds(10, 390, 180, 30);
-        this.add(filter_s);
-        this.add(filter_s_button); 
-        this.add(comboBox);
-        
-        JButton save_items = new JButton("Save Items to file");
-        save_items.setBounds(10, 500, 150, 30);
-        this.add(save_items);
-        
-        
-        ArrayList<String[]> data = new ArrayList<String[]>();
-        for(Item i:ItemController.items){
-            String[] s = {Integer.toString(i.id), i.name, i.category, Integer.toString(i.price), Integer.toString(i.available_amount), Integer.toString(i.least_allowed_amount)};
-            data.add(s);
-        }
-        String[][] data2 = data.toArray(new String[data.size()][5]);
-        
-        String[] columnNames = { "id", "Name",  "Category", "Price", "available", "minimum amount" };
-        JTable table = new JTable(data2, columnNames);
-        table.setDefaultEditor(Object.class, null);
-        table.setDefaultEditor(Number.class, null);
-        table.setDefaultEditor(Boolean.class, null);
-        JScrollPane sp = new JScrollPane(table);
-        sp.setBounds(200, 10, 670, 530);
-        table.setFillsViewportHeight(true);
-        this.add(sp);
-        
-        this.setVisible(true);
-        
-        
-        add_item.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                JFrame add = new JFrame();
-                add.setTitle("Simple Form - FlowLayout");
-                add.setSize(400, 400);
-                add.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-                add.setLayout(new GridLayout(6, 2, 10, 10));
-            
-                add.add(new JLabel("Name:"));
-                JTextField data_name = new JTextField(20);
-                add.add(data_name);
-                
-                add.add(new JLabel("Category:"));
-                JTextField data_category = new JTextField(20);
-                add.add(data_category);
-                
-                add.add(new JLabel("Price:"));
-                JTextField data_price = new JTextField(20);
-                add.add(data_price);
-                
-                add.add(new JLabel("available amount:"));
-                JTextField data_available_amount = new JTextField(20);
-                add.add(data_available_amount);
-                
-                add.add(new JLabel("least allowed amount:"));
-                JTextField data_least_allowd = new JTextField(20);
-                add.add(data_least_allowd);
-                
-                JButton save_bt = new JButton("save");
-                add.add(save_bt);
-                
-                add.setVisible(true);
-                
-                add.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        new ManageItems();
-                        add.dispose();
-                    }
-                });
-                
-                save_bt.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        try{
-                            ItemController.add( data_name.getText(), data_category.getText(), Integer.parseInt(data_price.getText()), Integer.parseInt(data_available_amount.getText()), Integer.parseInt(data_least_allowd.getText()));
-                            new ManageItems();
-                            add.dispose();
-                        }
-                        catch(NumberFormatException  ex){
-                            System.out.println(ex);
-                        }
-                    }
-                });
-            }
-        
-    });
+public class ManageItems extends JPanel {
+    private JTable table;
+    private DefaultTableModel tableModel;
     
-        delete_b.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        System.out.println(data2[table.getSelectedRow()][1]);
-                    }
+    public ManageItems() {
+        setLayout(new BorderLayout(10, 10));
+        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+        // Left panel with filters and buttons
+        JPanel leftPanel = createLeftPanel();
+        
+        // Center panel with table
+        JPanel centerPanel = createCenterPanel();
+        
+        add(leftPanel, BorderLayout.WEST);
+        add(centerPanel, BorderLayout.CENTER);
+        
+        refreshTable(ItemController.items);
+    }
+    
+    private JPanel createLeftPanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setPreferredSize(new Dimension(200, 0));
+        
+        // Buttons
+        JButton addBtn = new JButton("Add Item");
+        JButton editBtn = new JButton("Edit Selected");
+        JButton deleteBtn = new JButton("Delete Selected");
+        JButton saveBtn = new JButton("Save to File");
+        JButton refreshBtn = new JButton("Refresh All");
+        
+        addBtn.setMaximumSize(new Dimension(180, 30));
+        editBtn.setMaximumSize(new Dimension(180, 30));
+        deleteBtn.setMaximumSize(new Dimension(180, 30));
+        saveBtn.setMaximumSize(new Dimension(180, 30));
+        refreshBtn.setMaximumSize(new Dimension(180, 30));
+        
+        panel.add(addBtn);
+        panel.add(Box.createVerticalStrut(5));
+        panel.add(editBtn);
+        panel.add(Box.createVerticalStrut(5));
+        panel.add(deleteBtn);
+        panel.add(Box.createVerticalStrut(15));
+        
+        // Filter by name
+        panel.add(new JLabel("Filter by Name:"));
+        JTextField nameField = new JTextField();
+        nameField.setMaximumSize(new Dimension(180, 25));
+        JButton filterNameBtn = new JButton("Filter");
+        filterNameBtn.setMaximumSize(new Dimension(180, 25));
+        panel.add(nameField);
+        panel.add(filterNameBtn);
+        panel.add(Box.createVerticalStrut(10));
+        
+        // Filter by category
+        panel.add(new JLabel("Filter by Category:"));
+        JTextField categoryField = new JTextField();
+        categoryField.setMaximumSize(new Dimension(180, 25));
+        JButton filterCategoryBtn = new JButton("Filter");
+        filterCategoryBtn.setMaximumSize(new Dimension(180, 25));
+        panel.add(categoryField);
+        panel.add(filterCategoryBtn);
+        panel.add(Box.createVerticalStrut(10));
+        
+        // Filter by state
+        panel.add(new JLabel("Filter by State:"));
+        String[] states = {"Available", "Run Out", "Below Limit"};
+        JComboBox<String> stateCombo = new JComboBox<>(states);
+        stateCombo.setMaximumSize(new Dimension(180, 25));
+        JButton filterStateBtn = new JButton("Filter");
+        filterStateBtn.setMaximumSize(new Dimension(180, 25));
+        panel.add(stateCombo);
+        panel.add(filterStateBtn);
+        
+        panel.add(Box.createVerticalGlue());
+        panel.add(saveBtn);
+        panel.add(Box.createVerticalStrut(5));
+        panel.add(refreshBtn);
+        
+        // Action listeners
+        addBtn.addActionListener(e -> addItem());
+        editBtn.addActionListener(e -> editItem());
+        deleteBtn.addActionListener(e -> deleteItem());
+        saveBtn.addActionListener(e -> saveToFile());
+        refreshBtn.addActionListener(e -> refreshTable(ItemController.items));
+        
+        filterNameBtn.addActionListener(e -> {
+            String name = nameField.getText().trim();
+            if (!name.isEmpty()) {
+                refreshTable(ItemController.filter_by_name(name));
+            }
         });
         
+        filterCategoryBtn.addActionListener(e -> {
+            String category = categoryField.getText().trim();
+            if (!category.isEmpty()) {
+                refreshTable(ItemController.filter_by_category(category));
+            }
+        });
         
+        filterStateBtn.addActionListener(e -> {
+            int state = stateCombo.getSelectedIndex();
+            refreshTable(ItemController.filter_by_state(state));
+        });
+        
+        return panel;
+    }
+    
+    private JPanel createCenterPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        
+        String[] columns = {"ID", "Name", "Category", "Price", "Available", "Min Amount"};
+        tableModel = new DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        
+        table = new JTable(tableModel);
+        table.setFillsViewportHeight(true);
+        JScrollPane scrollPane = new JScrollPane(table);
+        
+        panel.add(scrollPane, BorderLayout.CENTER);
+        
+        return panel;
+    }
+    
+    private void refreshTable(Set<Item> items) {
+        tableModel.setRowCount(0);
+        for (Item item : items) {
+            tableModel.addRow(new Object[]{
+                item.id,
+                item.name,
+                item.category,
+                item.price,
+                item.available_amount,
+                item.least_allowed_amount
+            });
+        }
+    }
+    
+    private void addItem() {
+        JTextField nameField = new JTextField();
+        JTextField categoryField = new JTextField();
+        JTextField priceField = new JTextField();
+        JTextField availableField = new JTextField();
+        JTextField minField = new JTextField();
+        
+        Object[] message = {
+            "Name:", nameField,
+            "Category:", categoryField,
+            "Price:", priceField,
+            "Available Amount:", availableField,
+            "Minimum Amount:", minField
+        };
+        
+        int option = JOptionPane.showConfirmDialog(this, message, "Add Item", 
+            JOptionPane.OK_CANCEL_OPTION);
+        
+        if (option == JOptionPane.OK_OPTION) {
+            try {
+                String name = nameField.getText().trim();
+                String category = categoryField.getText().trim();
+                int price = Integer.parseInt(priceField.getText().trim());
+                int available = Integer.parseInt(availableField.getText().trim());
+                int min = Integer.parseInt(minField.getText().trim());
+                
+                if (name.isEmpty() || category.isEmpty()) {
+                    throw new IllegalArgumentException("Name and category cannot be empty");
+                }
+                
+                ItemController.add(name, category, price, available, min);
+                refreshTable(ItemController.items);
+                JOptionPane.showMessageDialog(this, "Item added successfully!");
+                
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Please enter valid numbers", 
+                    "Input Error", JOptionPane.ERROR_MESSAGE);
+                //ErrorLogger.log("Invalid number format in add item: " + e.getMessage());
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), 
+                    "Error", JOptionPane.ERROR_MESSAGE);
+                //ErrorLogger.log(e);
+            }
+        }
+    }
+    
+    private void editItem() {
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select an item to edit", 
+                "No Selection", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        int id = (int) tableModel.getValueAt(selectedRow, 0);
+        Item item = ItemController.find_by_id(id);
+        
+        if (item == null) return;
+        
+        JTextField nameField = new JTextField(item.name);
+        JTextField categoryField = new JTextField(item.category);
+        JTextField priceField = new JTextField(String.valueOf(item.price));
+        JTextField availableField = new JTextField(String.valueOf(item.available_amount));
+        JTextField minField = new JTextField(String.valueOf(item.least_allowed_amount));
+        
+        Object[] message = {
+            "Name:", nameField,
+            "Category:", categoryField,
+            "Price:", priceField,
+            "Available Amount:", availableField,
+            "Minimum Amount:", minField
+        };
+        
+        int option = JOptionPane.showConfirmDialog(this, message, "Edit Item", 
+            JOptionPane.OK_CANCEL_OPTION);
+        
+        if (option == JOptionPane.OK_OPTION) {
+            try {
+                
+                
+                refreshTable(ItemController.items);
+                JOptionPane.showMessageDialog(this, "Item updated successfully!");
+                
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), 
+                    "Error", JOptionPane.ERROR_MESSAGE);
+                //ErrorLogger.log(e);
+            }
+        }
+    }
+    
+    private void deleteItem() {
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select an item to delete", 
+                "No Selection", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        int id = (int) tableModel.getValueAt(selectedRow, 0);
+        
+        int confirm = JOptionPane.showConfirmDialog(this,
+            "Are you sure you want to delete this item?",
+            "Confirm Delete", JOptionPane.YES_NO_OPTION);
+        
+        if (confirm == JOptionPane.YES_OPTION) {
+            ItemController.remove(id);
+            refreshTable(ItemController.items);
+            JOptionPane.showMessageDialog(this, "Item deleted successfully!");
+        }
+    }
+    
+    private void saveToFile() {
+        ItemController.save_to_file();
+        JOptionPane.showMessageDialog(this, "Items saved to file successfully!");
     }
 }

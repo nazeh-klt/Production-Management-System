@@ -10,7 +10,7 @@ package com.mycompany.productionmanagmentsystem;
  */
 public class Item {
 
-    static int last_id = 0;
+    static int last_id = -1;
     int id;
     String name;
     String category;
