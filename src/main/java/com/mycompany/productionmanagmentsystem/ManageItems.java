@@ -1,18 +1,31 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package com.mycompany.productionmanagmentsystem;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.Set;
+import java.awt.event.*;
+import java.util.*;
 
-public class ManageItems extends JPanel {
+public class ManageItems extends JFrame {
 
     private JTable table;
     private DefaultTableModel tableModel;
+    private JTextField filterNameInput;
+    private JTextField filterCategoryInput;
+    private JComboBox<String> stateCombo;
 
     public ManageItems() {
+        setTitle("Manage Items");
+        setSize(900, 600);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
-        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         // Left panel with filters and buttons
         JPanel leftPanel = createLeftPanel();
@@ -20,10 +33,13 @@ public class ManageItems extends JPanel {
         // Center panel with table
         JPanel centerPanel = createCenterPanel();
 
-        add(leftPanel, BorderLayout.WEST);
-        add(centerPanel, BorderLayout.CENTER);
-
+        mainPanel.add(leftPanel, BorderLayout.WEST);
+        mainPanel.add(centerPanel, BorderLayout.CENTER);
+        
+        add(mainPanel, BorderLayout.CENTER);
+        
         refreshTable(ItemController.items);
+        setVisible(true);
     }
 
     private JPanel createLeftPanel() {
@@ -53,28 +69,28 @@ public class ManageItems extends JPanel {
 
         // Filter by name
         panel.add(new JLabel("Filter by Name:"));
-        JTextField nameField = new JTextField();
-        nameField.setMaximumSize(new Dimension(180, 25));
+        filterNameInput = new JTextField();
+        filterNameInput.setMaximumSize(new Dimension(180, 25));
         JButton filterNameBtn = new JButton("Filter");
         filterNameBtn.setMaximumSize(new Dimension(180, 25));
-        panel.add(nameField);
+        panel.add(filterNameInput);
         panel.add(filterNameBtn);
         panel.add(Box.createVerticalStrut(10));
 
         // Filter by category
         panel.add(new JLabel("Filter by Category:"));
-        JTextField categoryField = new JTextField();
-        categoryField.setMaximumSize(new Dimension(180, 25));
+        filterCategoryInput = new JTextField();
+        filterCategoryInput.setMaximumSize(new Dimension(180, 25));
         JButton filterCategoryBtn = new JButton("Filter");
         filterCategoryBtn.setMaximumSize(new Dimension(180, 25));
-        panel.add(categoryField);
+        panel.add(filterCategoryInput);
         panel.add(filterCategoryBtn);
         panel.add(Box.createVerticalStrut(10));
 
         // Filter by state
         panel.add(new JLabel("Filter by State:"));
         String[] states = {"Available", "Run Out", "Below Limit"};
-        JComboBox<String> stateCombo = new JComboBox<>(states);
+        stateCombo = new JComboBox<>(states);
         stateCombo.setMaximumSize(new Dimension(180, 25));
         JButton filterStateBtn = new JButton("Filter");
         filterStateBtn.setMaximumSize(new Dimension(180, 25));
@@ -94,16 +110,20 @@ public class ManageItems extends JPanel {
         refreshBtn.addActionListener(e -> refreshTable(ItemController.items));
 
         filterNameBtn.addActionListener(e -> {
-            String name = nameField.getText().trim();
+            String name = filterNameInput.getText().trim();
             if (!name.isEmpty()) {
                 refreshTable(ItemController.filter_by_name(name));
+            } else {
+                refreshTable(ItemController.items);
             }
         });
 
         filterCategoryBtn.addActionListener(e -> {
-            String category = categoryField.getText().trim();
+            String category = filterCategoryInput.getText().trim();
             if (!category.isEmpty()) {
                 refreshTable(ItemController.filter_by_category(category));
+            } else {
+                refreshTable(ItemController.items);
             }
         });
 
@@ -128,6 +148,7 @@ public class ManageItems extends JPanel {
 
         table = new JTable(tableModel);
         table.setFillsViewportHeight(true);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane scrollPane = new JScrollPane(table);
 
         panel.add(scrollPane, BorderLayout.CENTER);
@@ -186,11 +207,9 @@ public class ManageItems extends JPanel {
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "Please enter valid numbers",
                         "Input Error", JOptionPane.ERROR_MESSAGE);
-                //ErrorLogger.log("Invalid number format in add item: " + e.getMessage());
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(),
                         "Error", JOptionPane.ERROR_MESSAGE);
-                //ErrorLogger.log(e);
             }
         }
     }
@@ -207,6 +226,8 @@ public class ManageItems extends JPanel {
         Item item = ItemController.find_by_id(id);
 
         if (item == null) {
+            JOptionPane.showMessageDialog(this, "Item not found",
+                    "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -229,14 +250,32 @@ public class ManageItems extends JPanel {
 
         if (option == JOptionPane.OK_OPTION) {
             try {
+                String name = nameField.getText().trim();
+                String category = categoryField.getText().trim();
+                int price = Integer.parseInt(priceField.getText().trim());
+                int available = Integer.parseInt(availableField.getText().trim());
+                int min = Integer.parseInt(minField.getText().trim());
+
+                if (name.isEmpty() || category.isEmpty()) {
+                    throw new IllegalArgumentException("Name and category cannot be empty");
+                }
+
+                // Update the item
+                item.name = name;
+                item.category = category;
+                item.price = price;
+                item.available_amount = available;
+                item.least_allowed_amount = min;
 
                 refreshTable(ItemController.items);
                 JOptionPane.showMessageDialog(this, "Item updated successfully!");
 
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Please enter valid numbers",
+                        "Input Error", JOptionPane.ERROR_MESSAGE);
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(),
                         "Error", JOptionPane.ERROR_MESSAGE);
-                //ErrorLogger.log(e);
             }
         }
     }

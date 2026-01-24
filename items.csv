@@ -1,3 +1,4 @@
 id, name, category, price, available_amount, least_allowed_amount
 0,iron plate,Iron,100,500,50
+2,tttt,p,1000,50,5
 1,silver alloy,silver,100,500,50
