@@ -56,13 +56,12 @@ public class ItemController {
             }
         }
         return null;
-
     }
 
     public static Set<Item> filter_by_category(String category) {
         Set<Item> found_items = new HashSet<>();
         for (Item item : items) {
-            if (item.category == category) {
+            if (item.category.equals(category)) {
                 found_items.add(item);
             }
         }
@@ -72,7 +71,7 @@ public class ItemController {
     public static Set<Item> filter_by_name(String name) {
         Set<Item> found_items = new HashSet<>();
         for (Item item : items) {
-            if (item.name == name) {
+            if (item.name.equals(name)) {
                 found_items.add(item);
             }
         }
