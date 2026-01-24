@@ -73,7 +73,7 @@ public class ProductController {
     }
 
     public static void save_to_file() {
-        try (BufferedWriter ProductWriter = new BufferedWriter(new FileWriter("producs.csv"));) {
+        try (BufferedWriter ProductWriter = new BufferedWriter(new FileWriter("products.csv"));) {
             ProductWriter.write("id, name");
             for (Product product : products.keySet()) {
                 ProductWriter.write("\n" + product.id + "," + product.name);
