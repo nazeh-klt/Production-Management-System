@@ -11,7 +11,6 @@ import java.io.*;
  *
  * @author Admin
  */
-
 public class ItemController {
 
     static Set<Item> items = new HashSet<>();
@@ -95,10 +94,8 @@ public class ItemController {
 
 }
 
-
-
 /*
     0 = available 
     1 = run out
     2 = < 
-*/
+ */
