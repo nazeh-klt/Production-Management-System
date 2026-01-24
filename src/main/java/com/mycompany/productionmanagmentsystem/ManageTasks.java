@@ -87,11 +87,11 @@ public class ManageTasks extends JFrame {
         back_btn.setBounds(10, 520, 150, 30);
         this.add(back_btn);
 
-        // Create table with all tasks
+        // Create table with all tasks from all production lines
         ArrayList<String[]> data = getAllTasksData();
-        String[][] data2 = data.toArray(new String[data.size()][9]);
+        String[][] data2 = data.toArray(new String[data.size()][10]);
 
-        String[] columnNames = {"Task ID", "Product", "Required Qty", "Achieved Qty", "Progress %", 
+        String[] columnNames = {"Task ID", "Line", "Product", "Required Qty", "Achieved Qty", "Progress %", 
                                 "Client", "Start Date", "Deadline", "Status"};
         JTable table = new JTable(data2, columnNames);
         table.setDefaultEditor(Object.class, null);
@@ -222,7 +222,17 @@ public class ManageTasks extends JFrame {
                                 Date startDate = new Date(startDay, startMonth, startYear);
                                 Date deadlineDate = new Date(deadlineDay, deadlineMonth, deadlineYear);
 
-                                ProductionLineController.add_tasks(lineID, TaskController.tasks.size() + 1, 
+                                // Get the next task ID based on all tasks in all production lines
+                                int nextTaskID = 1;
+                                for (ProductionLine pl : ProductionLineController.lines) {
+                                    for (Tasks t : pl.lineTasks) {
+                                        if (t.ID >= nextTaskID) {
+                                            nextTaskID = t.ID + 1;
+                                        }
+                                    }
+                                }
+
+                                ProductionLineController.add_tasks(lineID, nextTaskID, 
                                     product, quantity, 0, startDate, deadlineDate, client, "PENDING");
 
                                 JOptionPane.showMessageDialog(addFrame, 
@@ -266,13 +276,21 @@ public class ManageTasks extends JFrame {
                 }
 
                 int taskID = Integer.parseInt(data2[selectedRow][0]);
+                String lineName = data2[selectedRow][1];
+                
                 int confirm = JOptionPane.showConfirmDialog(frame,
                     "Are you sure you want to delete this task?",
                     "Confirm Delete", 
                     JOptionPane.YES_NO_OPTION);
 
                 if (confirm == JOptionPane.YES_OPTION) {
-                    TaskController.tasks.removeIf(t -> t.ID == taskID);
+                    // Find the production line and remove the task
+                    for (ProductionLine pl : ProductionLineController.lines) {
+                        if (pl.lineName.equals(lineName)) {
+                            pl.lineTasks.removeIf(t -> t.ID == taskID);
+                            break;
+                        }
+                    }
                     JOptionPane.showMessageDialog(frame, "Task deleted successfully!");
                     frame.dispose();
                     new ManageTasks();
@@ -292,10 +310,20 @@ public class ManageTasks extends JFrame {
 
                 try {
                     int taskID = Integer.parseInt(data2[selectedRow][0]);
+                    String lineName = data2[selectedRow][1];
+                    
+                    // Find the task in the production line
                     Tasks task = null;
-                    for (Tasks t : TaskController.tasks) {
-                        if (t.ID == taskID) {
-                            task = t;
+                    ProductionLine line = null;
+                    for (ProductionLine pl : ProductionLineController.lines) {
+                        if (pl.lineName.equals(lineName)) {
+                            line = pl;
+                            for (Tasks t : pl.lineTasks) {
+                                if (t.ID == taskID) {
+                                    task = t;
+                                    break;
+                                }
+                            }
                             break;
                         }
                     }
@@ -305,9 +333,11 @@ public class ManageTasks extends JFrame {
                         thread.start();
                         JOptionPane.showMessageDialog(frame, 
                             "Task started successfully!\nRunning in background...");
-                    } else {
+                    } else if (task != null) {
                         JOptionPane.showMessageDialog(frame, 
-                            "Task is already running or completed!");
+                            "Task is already running or completed!\nCurrent status: " + task.status);
+                    } else {
+                        JOptionPane.showMessageDialog(frame, "Task not found!");
                     }
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(frame, 
@@ -347,9 +377,11 @@ public class ManageTasks extends JFrame {
                 } else {
                     String productName = selected.split(" - ")[1];
                     Set<Tasks> filtered = new HashSet<>();
-                    for (Tasks t : TaskController.tasks) {
-                        if (t.product.name.equals(productName)) {
-                            filtered.add(t);
+                    for (ProductionLine pl : ProductionLineController.lines) {
+                        for (Tasks t : pl.lineTasks) {
+                            if (t.product.name.equals(productName)) {
+                                filtered.add(t);
+                            }
                         }
                     }
                     new TaskFilterResultsFrame("Product: " + productName, filtered);
@@ -367,9 +399,11 @@ public class ManageTasks extends JFrame {
                     new ManageTasks();
                 } else {
                     Set<Tasks> filtered = new HashSet<>();
-                    for (Tasks t : TaskController.tasks) {
-                        if (t.status.equals(selected)) {
-                            filtered.add(t);
+                    for (ProductionLine pl : ProductionLineController.lines) {
+                        for (Tasks t : pl.lineTasks) {
+                            if (t.status.equals(selected)) {
+                                filtered.add(t);
+                            }
                         }
                     }
                     new TaskFilterResultsFrame("Status: " + selected, filtered);
@@ -389,19 +423,23 @@ public class ManageTasks extends JFrame {
 
     private ArrayList<String[]> getAllTasksData() {
         ArrayList<String[]> data = new ArrayList<>();
-        for (Tasks t : TaskController.tasks) {
-            String[] row = {
-                String.valueOf(t.ID),
-                t.product.name,
-                String.valueOf(t.requiredQuantity),
-                String.valueOf(t.achievedQuantity),
-                String.format("%.1f%%", t.get_achieved_percentage()),
-                t.clientName,
-                t.startDate.day + "/" + t.startDate.month + "/" + t.startDate.year,
-                t.deadlineDate.day + "/" + t.deadlineDate.month + "/" + t.deadlineDate.year,
-                t.status
-            };
-            data.add(row);
+        // Iterate through all production lines and get their tasks
+        for (ProductionLine pl : ProductionLineController.lines) {
+            for (Tasks t : pl.lineTasks) {
+                String[] row = {
+                    String.valueOf(t.ID),
+                    pl.lineName,
+                    t.product.name,
+                    String.valueOf(t.requiredQuantity),
+                    String.valueOf(t.achievedQuantity),
+                    String.format("%.1f%%", t.get_achieved_percentage()),
+                    t.clientName,
+                    t.startDate.day + "/" + t.startDate.month + "/" + t.startDate.year,
+                    t.deadlineDate.day + "/" + t.deadlineDate.month + "/" + t.deadlineDate.year,
+                    t.status
+                };
+                data.add(row);
+            }
         }
         return data;
     }
@@ -428,8 +466,18 @@ class TaskFilterResultsFrame extends JFrame {
 
         ArrayList<String[]> data = new ArrayList<>();
         for (Tasks t : filteredTasks) {
+            // Find which production line this task belongs to
+            String lineName = "";
+            for (ProductionLine pl : ProductionLineController.lines) {
+                if (pl.lineTasks.contains(t)) {
+                    lineName = pl.lineName;
+                    break;
+                }
+            }
+            
             String[] row = {
                 String.valueOf(t.ID),
+                lineName,
                 t.product.name,
                 String.valueOf(t.requiredQuantity),
                 String.valueOf(t.achievedQuantity),
@@ -441,9 +489,9 @@ class TaskFilterResultsFrame extends JFrame {
             };
             data.add(row);
         }
-        String[][] data2 = data.toArray(new String[data.size()][9]);
+        String[][] data2 = data.toArray(new String[data.size()][10]);
 
-        String[] columnNames = {"Task ID", "Product", "Required Qty", "Achieved Qty", 
+        String[] columnNames = {"Task ID", "Line", "Product", "Required Qty", "Achieved Qty", 
                                 "Progress %", "Client", "Start Date", "Deadline", "Status"};
         JTable table = new JTable(data2, columnNames);
         table.setDefaultEditor(Object.class, null);
