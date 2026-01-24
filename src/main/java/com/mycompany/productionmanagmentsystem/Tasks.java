@@ -6,6 +6,7 @@ import javax.swing.JOptionPane;
 public class Tasks implements Runnable {
 
     int ID;
+    static int last_id = -1;
     Product product;
     int requiredQuantity, achievedQuantity;
     String clientName;
@@ -23,6 +24,24 @@ public class Tasks implements Runnable {
                  String status) {
 
         this.ID = ID;
+        this.product = product;
+        this.requiredQuantity = requiredQuantity;
+        this.achievedQuantity = achievedQuantity;
+        this.clientName = clientName;
+        this.startDate = startDate;
+        this.deadlineDate = deadlineDate;
+        this.status = status;
+    }
+    
+    public Tasks(Product product,
+                 int requiredQuantity,
+                 int achievedQuantity,
+                 Date startDate,
+                 Date deadlineDate,
+                 String clientName,
+                 String status) {
+
+        this.ID = ++last_id;
         this.product = product;
         this.requiredQuantity = requiredQuantity;
         this.achievedQuantity = achievedQuantity;
@@ -50,7 +69,6 @@ public class Tasks implements Runnable {
                 int needed = entry.getValue();
                 int used = 0;
 
-                // 🔒 synchronize on shared resource (Item)
                 synchronized (item) {
 
                     while (used < needed) {
@@ -70,7 +88,6 @@ public class Tasks implements Runnable {
                     }
                 }
 
-                // 🚨 Out of stock handling (Swing)
                 if (item.available_amount == 0) {
 
                     String[] options = {"Abort Task", "Wait"};
@@ -99,6 +116,7 @@ public class Tasks implements Runnable {
             }
 
             achievedQuantity++;
+            
         }
 
         status = "COMPLETED";

@@ -18,8 +18,15 @@ public class ProductionManagmentSystem {
 
     public static void main(String[] args) {
         System.out.println("Hello World!");
+        
         User.load_from_file();
         ItemController.load_from_file();
+        ProductController.load_from_file();
+        ProductionLineController.load_from_file();
+        
+        DailySave daily_save = new DailySave();
+        daily_save.start();
+        
         LogIn l = new LogIn();
     }
 }

@@ -71,9 +71,13 @@ public class ManageItems extends JFrame {
         this.add(comboBox);
 
         JButton save_items = new JButton("Save Items to file");
-        save_items.setBounds(10, 500, 150, 30);
+        save_items.setBounds(10, 470, 150, 30);
         this.add(save_items);
 
+        JButton back_btn = new JButton("Back to Menu");
+        back_btn.setBounds(10, 500, 150, 30);
+        this.add(back_btn);
+        
         ArrayList<String[]> data = new ArrayList<String[]>();
         for (Item i : ItemController.items) {
             String[] s = {Integer.toString(i.id), i.name, i.category, Integer.toString(i.price), Integer.toString(i.available_amount), Integer.toString(i.least_allowed_amount)};
@@ -141,7 +145,7 @@ public class ManageItems extends JFrame {
                                     "Error", 
                                     JOptionPane.ERROR_MESSAGE);
                                 System.err.println("Error reopening Manage Items: " + ex.getMessage());
-                                ex.printStackTrace();
+                                Logger.save_to_file(ex.getMessage());
                                 // TODO: Add ErrorLogger.log(ex);
                             }
                         }
@@ -202,7 +206,7 @@ public class ManageItems extends JFrame {
                                     "Input Error", 
                                     JOptionPane.ERROR_MESSAGE);
                                 System.err.println("Number format error in add item: " + ex.getMessage());
-                                ex.printStackTrace();
+                                Logger.save_to_file(ex.getMessage());
                                 // TODO: Add ErrorLogger.log(ex);
                             } catch (Exception ex) {
                                 JOptionPane.showMessageDialog(add, 
@@ -210,7 +214,7 @@ public class ManageItems extends JFrame {
                                     "Error", 
                                     JOptionPane.ERROR_MESSAGE);
                                 System.err.println("Error adding item: " + ex.getMessage());
-                                ex.printStackTrace();
+                                Logger.save_to_file(ex.getMessage());
                                 // TODO: Add ErrorLogger.log(ex);
                             }
                         }
@@ -221,7 +225,7 @@ public class ManageItems extends JFrame {
                         "Error", 
                         JOptionPane.ERROR_MESSAGE);
                     System.err.println("Error opening add item dialog: " + ex.getMessage());
-                    ex.printStackTrace();
+                    Logger.save_to_file(ex.getMessage());
                     // TODO: Add ErrorLogger.log(ex);
                 }
             }
@@ -270,7 +274,7 @@ public class ManageItems extends JFrame {
                         "Parse Error", 
                         JOptionPane.ERROR_MESSAGE);
                     System.err.println("Error parsing item ID: " + ex.getMessage());
-                    ex.printStackTrace();
+                    Logger.save_to_file(ex.getMessage());
                     // TODO: Add ErrorLogger.log(ex);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(frame, 
@@ -278,7 +282,7 @@ public class ManageItems extends JFrame {
                         "Delete Error", 
                         JOptionPane.ERROR_MESSAGE);
                     System.err.println("Error deleting item: " + ex.getMessage());
-                    ex.printStackTrace();
+                    Logger.save_to_file(ex.getMessage());
                     // TODO: Add ErrorLogger.log(ex);
                 }
             }
@@ -363,7 +367,7 @@ public class ManageItems extends JFrame {
                                     "Error", 
                                     JOptionPane.ERROR_MESSAGE);
                                 System.err.println("Error closing edit window: " + ex.getMessage());
-                                ex.printStackTrace();
+                                Logger.save_to_file(ex.getMessage());
                                 // TODO: Add ErrorLogger.log(ex);
                             }
                         }
@@ -428,7 +432,7 @@ public class ManageItems extends JFrame {
                                     "Input Error", 
                                     JOptionPane.ERROR_MESSAGE);
                                 System.err.println("Number format error in edit item: " + ex.getMessage());
-                                ex.printStackTrace();
+                                Logger.save_to_file(ex.getMessage());
                                 // TODO: Add ErrorLogger.log(ex);
                             } catch (Exception ex) {
                                 JOptionPane.showMessageDialog(add, 
@@ -436,7 +440,7 @@ public class ManageItems extends JFrame {
                                     "Update Error", 
                                     JOptionPane.ERROR_MESSAGE);
                                 System.err.println("Error updating item: " + ex.getMessage());
-                                ex.printStackTrace();
+                                Logger.save_to_file(ex.getMessage());
                                 // TODO: Add ErrorLogger.log(ex);
                             }
                         }
@@ -447,7 +451,7 @@ public class ManageItems extends JFrame {
                         "Parse Error", 
                         JOptionPane.ERROR_MESSAGE);
                     System.err.println("Error parsing item ID: " + ex.getMessage());
-                    ex.printStackTrace();
+                    Logger.save_to_file(ex.getMessage());
                     // TODO: Add ErrorLogger.log(ex);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(frame, 
@@ -455,7 +459,7 @@ public class ManageItems extends JFrame {
                         "Error", 
                         JOptionPane.ERROR_MESSAGE);
                     System.err.println("Error opening edit dialog: " + ex.getMessage());
-                    ex.printStackTrace();
+                    Logger.save_to_file(ex.getMessage());
                     // TODO: Add ErrorLogger.log(ex);
                 }
             }
@@ -493,7 +497,7 @@ public class ManageItems extends JFrame {
                         "Filter Error", 
                         JOptionPane.ERROR_MESSAGE);
                     System.err.println("Error applying name filter: " + ex.getMessage());
-                    ex.printStackTrace();
+                    Logger.save_to_file(ex.getMessage());
                     // TODO: Add ErrorLogger.log(ex);
                 }
             }
@@ -530,7 +534,7 @@ public class ManageItems extends JFrame {
                         "Filter Error", 
                         JOptionPane.ERROR_MESSAGE);
                     System.err.println("Error applying category filter: " + ex.getMessage());
-                    ex.printStackTrace();
+                    Logger.save_to_file(ex.getMessage());
                     // TODO: Add ErrorLogger.log(ex);
                 }
             }
@@ -561,7 +565,7 @@ public class ManageItems extends JFrame {
                         "Filter Error", 
                         JOptionPane.ERROR_MESSAGE);
                     System.err.println("Error applying state filter: " + ex.getMessage());
-                    ex.printStackTrace();
+                    Logger.save_to_file(ex.getMessage());
                     // TODO: Add ErrorLogger.log(ex);
                 }
             }
@@ -594,12 +598,18 @@ public class ManageItems extends JFrame {
                         "Save Error", 
                         JOptionPane.ERROR_MESSAGE);
                     System.err.println("Error saving items to file: " + ex.getMessage());
-                    ex.printStackTrace();
+                    Logger.save_to_file(ex.getMessage());
                     // TODO: Add ErrorLogger.log(ex);
                 }
             }
         });
-
+        back_btn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+                new SupervisorMainMenu();
+            }
+        });
     }
 }
 
