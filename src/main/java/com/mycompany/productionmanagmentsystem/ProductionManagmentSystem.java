@@ -23,7 +23,8 @@ public class ProductionManagmentSystem  {
         ItemController.load_from_file();
         
 
-        ManageItems m = new ManageItems();
+//        ManageItems m = new ManageItems();
+        LogIn l = new LogIn();
         
     }
 }
