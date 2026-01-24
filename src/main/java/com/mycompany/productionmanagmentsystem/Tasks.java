@@ -39,10 +39,11 @@ public class Tasks implements Runnable{
 
     @Override
     public void run() {
-        int currentItemAmount = 0;
+        int currentItemAmount;
         Scanner scan = new Scanner(System.in);
         while(achievedQuantity < requiredQuantity){
             for(Map.Entry<Item, Integer> i: product.required_items.entrySet()){
+                currentItemAmount = 0;
                 while(currentItemAmount < i.getValue()){
                     i.getKey().available_amount--;
                     currentItemAmount++;
