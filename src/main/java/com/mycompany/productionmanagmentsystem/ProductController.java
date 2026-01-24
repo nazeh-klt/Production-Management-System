@@ -56,21 +56,59 @@ public class ProductController {
         products.remove(find_by_id(id));
     }
 
-    public static void load_from_file() {
-        try (BufferedReader ProductReader = new BufferedReader(new FileReader("products.csv"));) {
-            String line;
-            ProductReader.readLine();
-            while ((line = ProductReader.readLine()) != null) {
-                String[] attributes = line.split(",");
-                add(Integer.parseInt(attributes[0]), attributes[1]);
-
-            }
-
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+public static void load_from_file() {
+    try (BufferedReader ProductReader = new BufferedReader(new FileReader("products.csv"))) {
+        String line;
+        ProductReader.readLine();
+        while ((line = ProductReader.readLine()) != null) {
+            String[] attributes = line.split(",");
+            add(Integer.parseInt(attributes[0]), attributes[1]);
         }
-
+    } catch (Exception e) {
+        System.out.println(e.getMessage());
     }
+
+    try (BufferedReader ProductItemsReader = new BufferedReader(new FileReader("productitems.txt"))) {
+        String line;
+        ProductItemsReader.readLine();
+        while ((line = ProductItemsReader.readLine()) != null) {
+            String[] attributes = line.split(",");
+            
+            if (attributes.length < 3) {
+                System.out.println("Warning: Skipping invalid line: " + line);
+                continue;
+            }
+            
+            int productId = Integer.parseInt(attributes[0].trim());
+            int itemId = Integer.parseInt(attributes[1].trim());
+            int itemAmount = Integer.parseInt(attributes[2].trim());
+            
+            Product targetProduct = null;
+            for (Product product : products.keySet()) {
+                if (product.id == productId) {
+                    targetProduct = product;
+                    break;
+                }
+            }
+            
+            if (targetProduct == null) {
+                System.out.println("Warning: Product ID " + productId + " not found");
+                continue;
+            }
+            
+            Item targetItem = ItemController.find_by_id(itemId);
+            
+            if (targetItem == null) {
+                System.out.println("Warning: Item ID " + itemId + " not found");
+                continue;
+            }
+            
+            targetProduct.required_items.put(targetItem, itemAmount);
+        }
+    } catch (Exception e) {
+        System.out.println(e.getMessage());
+    }
+}
 
     public static void save_to_file() {
         try (BufferedWriter ProductWriter = new BufferedWriter(new FileWriter("products.csv"));) {
@@ -79,6 +117,18 @@ public class ProductController {
                 ProductWriter.write("\n" + product.id + "," + product.name);
             }
         } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        try(BufferedWriter ProductItemsWriter = new BufferedWriter(new FileWriter("productitems.txt"))){
+            ProductItemsWriter.write("product id, item id, item amount");
+            for (Product product : products.keySet()) {
+                for(Item item : product.required_items.keySet())
+                ProductItemsWriter.write("\n" + product.id + "," + item.id + "," + product.required_items.get(item));
+                
+            }
+   
+        }
+        catch(Exception e){
             System.out.println(e.getMessage());
         }
     }

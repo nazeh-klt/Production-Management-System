@@ -16,9 +16,9 @@ import java.io.FileWriter;
 public class Logger {
     
         public static void save_to_file(String Error) {
-        try (BufferedWriter UserWriter = new BufferedWriter(new FileWriter("users.csv"));) {
-                UserWriter.write(Error);
-            
+        try (BufferedWriter UserWriter = new BufferedWriter(new FileWriter("error.txt"));) {
+                UserWriter.write(Error + "\n");
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
