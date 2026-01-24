@@ -34,16 +34,30 @@ public class LogIn extends JFrame {
         add(loginBtn);
 
         loginBtn.addActionListener(e -> {
-            String user = userField.getText();
-            String pass = new String(passField.getPassword());
 
+            String name = userField.getText();
+            String password = new String(passField.getPassword());
+
+            User user = User.login(name, password);
+
+            if (user == null) {
+                JOptionPane.showMessageDialog(
+                    this,
+                    "Invalid username or password",
+                    "Login Failed",
+                    JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+
+            // login success
             dispose();
 
-            // 🔹 بسيط للمشروع (بدون DB)
-            if (user.equalsIgnoreCase("manager")) {
-                new ManageProductionLines();   // مدير الإنتاج
-            } else {
-                new SupervisorMainMenu();      // مشرف الإنتاج
+            // 0 = Manager | 1 = Supervisor
+            if (user.role == 0) {
+                new ManageProductionLines();   // Manager
+            } else if (user.role == 1) {
+                new SupervisorMainMenu();      // Supervisor
             }
         });
 
