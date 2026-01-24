@@ -96,206 +96,506 @@ public class ManageItems extends JFrame {
         add_item.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                JFrame add = new JFrame();
-                add.setTitle("Simple Form - FlowLayout");
-                add.setSize(400, 400);
-                add.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-                add.setLayout(new GridLayout(6, 2, 10, 10));
+                try {
+                    frame.dispose();
+                    JFrame add = new JFrame();
+                    add.setTitle("Add New Item");
+                    add.setSize(400, 400);
+                    add.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+                    add.setLayout(new GridLayout(6, 2, 10, 10));
 
-                add.add(new JLabel("Name:"));
-                JTextField data_name = new JTextField(20);
-                add.add(data_name);
+                    add.add(new JLabel("Name:"));
+                    JTextField data_name = new JTextField(20);
+                    add.add(data_name);
 
-                add.add(new JLabel("Category:"));
-                JTextField data_category = new JTextField(20);
-                add.add(data_category);
+                    add.add(new JLabel("Category:"));
+                    JTextField data_category = new JTextField(20);
+                    add.add(data_category);
 
-                add.add(new JLabel("Price:"));
-                JTextField data_price = new JTextField(20);
-                add.add(data_price);
+                    add.add(new JLabel("Price:"));
+                    JTextField data_price = new JTextField(20);
+                    add.add(data_price);
 
-                add.add(new JLabel("available amount:"));
-                JTextField data_available_amount = new JTextField(20);
-                add.add(data_available_amount);
+                    add.add(new JLabel("available amount:"));
+                    JTextField data_available_amount = new JTextField(20);
+                    add.add(data_available_amount);
 
-                add.add(new JLabel("least allowed amount:"));
-                JTextField data_least_allowd = new JTextField(20);
-                add.add(data_least_allowd);
+                    add.add(new JLabel("least allowed amount:"));
+                    JTextField data_least_allowd = new JTextField(20);
+                    add.add(data_least_allowd);
 
-                JButton save_bt = new JButton("save");
-                add.add(save_bt);
+                    JButton save_bt = new JButton("save");
+                    add.add(save_bt);
 
-                add.setVisible(true);
+                    add.setVisible(true);
 
-                add.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        new ManageItems();
-                        add.dispose();
-                    }
-                });
-
-                save_bt.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        try {
-                            ItemController.add(data_name.getText(), data_category.getText(), Integer.parseInt(data_price.getText()), Integer.parseInt(data_available_amount.getText()), Integer.parseInt(data_least_allowd.getText()));
-                            new ManageItems();
-                            add.dispose();
-                        } catch (NumberFormatException ex) {
-                            System.out.println(ex);
+                    add.addWindowListener(new java.awt.event.WindowAdapter() {
+                        @Override
+                        public void windowClosing(java.awt.event.WindowEvent e) {
+                            try {
+                                new ManageItems();
+                                add.dispose();
+                            } catch (Exception ex) {
+                                JOptionPane.showMessageDialog(add, 
+                                    "Error reopening Manage Items: " + ex.getMessage() + "\n\nTODO: Add error logger", 
+                                    "Error", 
+                                    JOptionPane.ERROR_MESSAGE);
+                                System.err.println("Error reopening Manage Items: " + ex.getMessage());
+                                ex.printStackTrace();
+                                // TODO: Add ErrorLogger.log(ex);
+                            }
                         }
-                    }
-                });
-            }
+                    });
 
+                    save_bt.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            try {
+                                String name = data_name.getText().trim();
+                                String category = data_category.getText().trim();
+                                String priceText = data_price.getText().trim();
+                                String availableText = data_available_amount.getText().trim();
+                                String leastText = data_least_allowd.getText().trim();
+
+                                // Validate inputs
+                                if (name.isEmpty()) {
+                                    JOptionPane.showMessageDialog(add, 
+                                        "Name cannot be empty!", 
+                                        "Validation Error", 
+                                        JOptionPane.WARNING_MESSAGE);
+                                    return;
+                                }
+                                
+                                if (category.isEmpty()) {
+                                    JOptionPane.showMessageDialog(add, 
+                                        "Category cannot be empty!", 
+                                        "Validation Error", 
+                                        JOptionPane.WARNING_MESSAGE);
+                                    return;
+                                }
+
+                                int price = Integer.parseInt(priceText);
+                                int availableAmount = Integer.parseInt(availableText);
+                                int leastAllowed = Integer.parseInt(leastText);
+
+                                if (price < 0 || availableAmount < 0 || leastAllowed < 0) {
+                                    JOptionPane.showMessageDialog(add, 
+                                        "Values cannot be negative!", 
+                                        "Validation Error", 
+                                        JOptionPane.WARNING_MESSAGE);
+                                    return;
+                                }
+
+                                ItemController.add(name, category, price, availableAmount, leastAllowed);
+                                
+                                JOptionPane.showMessageDialog(add, 
+                                    "Item added successfully!\n\nName: " + name + "\nCategory: " + category, 
+                                    "Success", 
+                                    JOptionPane.INFORMATION_MESSAGE);
+                                
+                                new ManageItems();
+                                add.dispose();
+                                
+                            } catch (NumberFormatException ex) {
+                                JOptionPane.showMessageDialog(add, 
+                                    "Invalid input! Please enter valid numbers for:\n- Price\n- Available amount\n- Least allowed amount\n\nTODO: Add error logger", 
+                                    "Input Error", 
+                                    JOptionPane.ERROR_MESSAGE);
+                                System.err.println("Number format error in add item: " + ex.getMessage());
+                                ex.printStackTrace();
+                                // TODO: Add ErrorLogger.log(ex);
+                            } catch (Exception ex) {
+                                JOptionPane.showMessageDialog(add, 
+                                    "Error adding item: " + ex.getMessage() + "\n\nTODO: Add error logger", 
+                                    "Error", 
+                                    JOptionPane.ERROR_MESSAGE);
+                                System.err.println("Error adding item: " + ex.getMessage());
+                                ex.printStackTrace();
+                                // TODO: Add ErrorLogger.log(ex);
+                            }
+                        }
+                    });
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(frame, 
+                        "Error opening add item dialog: " + ex.getMessage() + "\n\nTODO: Add error logger", 
+                        "Error", 
+                        JOptionPane.ERROR_MESSAGE);
+                    System.err.println("Error opening add item dialog: " + ex.getMessage());
+                    ex.printStackTrace();
+                    // TODO: Add ErrorLogger.log(ex);
+                }
+            }
         });
         delete_b.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println(Integer.parseInt(data2[table.getSelectedRow()][0]));
-                ItemController.remove(Integer.parseInt(data2[table.getSelectedRow()][0]));
-                frame.dispose();
-                new ManageItems();
+                try {
+                    int selectedRow = table.getSelectedRow();
+                    if (selectedRow == -1) {
+                        JOptionPane.showMessageDialog(frame, 
+                            "Please select an item to delete!", 
+                            "No Selection", 
+                            JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+                    
+                    String itemName = data2[selectedRow][1];
+                    int itemId = Integer.parseInt(data2[selectedRow][0]);
+                    
+                    int confirm = JOptionPane.showConfirmDialog(frame,
+                        "Are you sure you want to delete this item?\n\nID: " + itemId + "\nName: " + itemName,
+                        "Confirm Delete", 
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.WARNING_MESSAGE);
+                    
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        ItemController.remove(itemId);
+                        
+                        JOptionPane.showMessageDialog(frame, 
+                            "Item deleted successfully!\n\nDeleted: " + itemName, 
+                            "Delete Successful", 
+                            JOptionPane.INFORMATION_MESSAGE);
+                        
+                        frame.dispose();
+                        new ManageItems();
+                    } else {
+                        JOptionPane.showMessageDialog(frame, 
+                            "Delete operation cancelled.", 
+                            "Cancelled", 
+                            JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(frame, 
+                        "Error parsing item ID: " + ex.getMessage() + "\n\nTODO: Add error logger", 
+                        "Parse Error", 
+                        JOptionPane.ERROR_MESSAGE);
+                    System.err.println("Error parsing item ID: " + ex.getMessage());
+                    ex.printStackTrace();
+                    // TODO: Add ErrorLogger.log(ex);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(frame, 
+                        "Error deleting item: " + ex.getMessage() + "\n\nTODO: Add error logger", 
+                        "Delete Error", 
+                        JOptionPane.ERROR_MESSAGE);
+                    System.err.println("Error deleting item: " + ex.getMessage());
+                    ex.printStackTrace();
+                    // TODO: Add ErrorLogger.log(ex);
+                }
             }
         });
         edit_b.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                Item item = ItemController.find_by_id(Integer.parseInt(data2[table.getSelectedRow()][0]));
-                JFrame add = new JFrame();
-                add.setTitle("Simple Form - FlowLayout");
-                add.setSize(400, 400);
-                add.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-                add.setLayout(new GridLayout(6, 2, 10, 10));
-
-                add.add(new JLabel("Name:"));
-                JTextField data_name = new JTextField(20);
-                data_name.setText(item.name);
-                add.add(data_name);
-
-                add.add(new JLabel("Category:"));
-                JTextField data_category = new JTextField(20);
-                data_category.setText(item.category);
-                add.add(data_category);
-
-                add.add(new JLabel("Price:"));
-                JTextField data_price = new JTextField(20);
-                data_price.setText(String.valueOf(item.price));
-                add.add(data_price);
-
-                add.add(new JLabel("available amount:"));
-                JTextField data_available_amount = new JTextField(20);
-                data_available_amount.setText(String.valueOf(item.available_amount));
-                add.add(data_available_amount);
-
-                add.add(new JLabel("least allowed amount:"));
-                JTextField data_least_allowd = new JTextField(20);
-                data_least_allowd.setText(String.valueOf(item.least_allowed_amount));
-                add.add(data_least_allowd);
-
-                JButton save_bt = new JButton("save");
-                add.add(save_bt);
-
-                add.setVisible(true);
-
-                add.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        new ManageItems();
-                        add.dispose();
+                try {
+                    int selectedRow = table.getSelectedRow();
+                    if (selectedRow == -1) {
+                        JOptionPane.showMessageDialog(frame, 
+                            "Please select an item to edit!", 
+                            "No Selection", 
+                            JOptionPane.WARNING_MESSAGE);
+                        return;
                     }
-                });
+                    
+                    int itemId = Integer.parseInt(data2[selectedRow][0]);
+                    Item item = ItemController.find_by_id(itemId);
+                    
+                    if (item == null) {
+                        JOptionPane.showMessageDialog(frame, 
+                            "Item not found in the system!", 
+                            "Item Not Found", 
+                            JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    
+                    frame.dispose();
+                    JFrame add = new JFrame();
+                    add.setTitle("Edit Item - ID: " + itemId);
+                    add.setSize(400, 400);
+                    add.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+                    add.setLayout(new GridLayout(6, 2, 10, 10));
 
-                save_bt.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        try {
-                            item.name = data_name.getText();
-                            item.category = data_category.getText();
-                            item.price = Integer.parseInt(data_price.getText());
-                            item.available_amount = Integer.parseInt(data_available_amount.getText());
-                            item.least_allowed_amount = Integer.parseInt(data_least_allowd.getText());
-                            new ManageItems();
-                            add.dispose();
-                        } catch (NumberFormatException ex) {
-                            System.out.println(ex);
+                    add.add(new JLabel("Name:"));
+                    JTextField data_name = new JTextField(20);
+                    data_name.setText(item.name);
+                    add.add(data_name);
+
+                    add.add(new JLabel("Category:"));
+                    JTextField data_category = new JTextField(20);
+                    data_category.setText(item.category);
+                    add.add(data_category);
+
+                    add.add(new JLabel("Price:"));
+                    JTextField data_price = new JTextField(20);
+                    data_price.setText(String.valueOf(item.price));
+                    add.add(data_price);
+
+                    add.add(new JLabel("available amount:"));
+                    JTextField data_available_amount = new JTextField(20);
+                    data_available_amount.setText(String.valueOf(item.available_amount));
+                    add.add(data_available_amount);
+
+                    add.add(new JLabel("least allowed amount:"));
+                    JTextField data_least_allowd = new JTextField(20);
+                    data_least_allowd.setText(String.valueOf(item.least_allowed_amount));
+                    add.add(data_least_allowd);
+
+                    JButton save_bt = new JButton("save");
+                    add.add(save_bt);
+
+                    add.setVisible(true);
+
+                    add.addWindowListener(new java.awt.event.WindowAdapter() {
+                        @Override
+                        public void windowClosing(java.awt.event.WindowEvent e) {
+                            try {
+                                int confirm = JOptionPane.showConfirmDialog(add,
+                                    "Close without saving changes?",
+                                    "Confirm Close", 
+                                    JOptionPane.YES_NO_OPTION);
+                                
+                                if (confirm == JOptionPane.YES_OPTION) {
+                                    new ManageItems();
+                                    add.dispose();
+                                }
+                            } catch (Exception ex) {
+                                JOptionPane.showMessageDialog(add, 
+                                    "Error closing edit window: " + ex.getMessage() + "\n\nTODO: Add error logger", 
+                                    "Error", 
+                                    JOptionPane.ERROR_MESSAGE);
+                                System.err.println("Error closing edit window: " + ex.getMessage());
+                                ex.printStackTrace();
+                                // TODO: Add ErrorLogger.log(ex);
+                            }
                         }
-                    }
-                });
-            }
-        });
-        save_items.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ItemController.save_to_file();
-            }
-        });
+                    });
 
+                    save_bt.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            try {
+                                String name = data_name.getText().trim();
+                                String category = data_category.getText().trim();
+                                String priceText = data_price.getText().trim();
+                                String availableText = data_available_amount.getText().trim();
+                                String leastText = data_least_allowd.getText().trim();
+
+                                // Validate inputs
+                                if (name.isEmpty()) {
+                                    JOptionPane.showMessageDialog(add, 
+                                        "Name cannot be empty!", 
+                                        "Validation Error", 
+                                        JOptionPane.WARNING_MESSAGE);
+                                    return;
+                                }
+                                
+                                if (category.isEmpty()) {
+                                    JOptionPane.showMessageDialog(add, 
+                                        "Category cannot be empty!", 
+                                        "Validation Error", 
+                                        JOptionPane.WARNING_MESSAGE);
+                                    return;
+                                }
+
+                                int price = Integer.parseInt(priceText);
+                                int availableAmount = Integer.parseInt(availableText);
+                                int leastAllowed = Integer.parseInt(leastText);
+
+                                if (price < 0 || availableAmount < 0 || leastAllowed < 0) {
+                                    JOptionPane.showMessageDialog(add, 
+                                        "Values cannot be negative!", 
+                                        "Validation Error", 
+                                        JOptionPane.WARNING_MESSAGE);
+                                    return;
+                                }
+
+                                item.name = name;
+                                item.category = category;
+                                item.price = price;
+                                item.available_amount = availableAmount;
+                                item.least_allowed_amount = leastAllowed;
+                                
+                                JOptionPane.showMessageDialog(add, 
+                                    "Item updated successfully!\n\nName: " + name + "\nCategory: " + category, 
+                                    "Update Successful", 
+                                    JOptionPane.INFORMATION_MESSAGE);
+                                
+                                new ManageItems();
+                                add.dispose();
+                                
+                            } catch (NumberFormatException ex) {
+                                JOptionPane.showMessageDialog(add, 
+                                    "Invalid input! Please enter valid numbers for:\n- Price\n- Available amount\n- Least allowed amount\n\nTODO: Add error logger", 
+                                    "Input Error", 
+                                    JOptionPane.ERROR_MESSAGE);
+                                System.err.println("Number format error in edit item: " + ex.getMessage());
+                                ex.printStackTrace();
+                                // TODO: Add ErrorLogger.log(ex);
+                            } catch (Exception ex) {
+                                JOptionPane.showMessageDialog(add, 
+                                    "Error updating item: " + ex.getMessage() + "\n\nTODO: Add error logger", 
+                                    "Update Error", 
+                                    JOptionPane.ERROR_MESSAGE);
+                                System.err.println("Error updating item: " + ex.getMessage());
+                                ex.printStackTrace();
+                                // TODO: Add ErrorLogger.log(ex);
+                            }
+                        }
+                    });
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(frame, 
+                        "Error parsing item ID: " + ex.getMessage() + "\n\nTODO: Add error logger", 
+                        "Parse Error", 
+                        JOptionPane.ERROR_MESSAGE);
+                    System.err.println("Error parsing item ID: " + ex.getMessage());
+                    ex.printStackTrace();
+                    // TODO: Add ErrorLogger.log(ex);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(frame, 
+                        "Error opening edit dialog: " + ex.getMessage() + "\n\nTODO: Add error logger", 
+                        "Error", 
+                        JOptionPane.ERROR_MESSAGE);
+                    System.err.println("Error opening edit dialog: " + ex.getMessage());
+                    ex.printStackTrace();
+                    // TODO: Add ErrorLogger.log(ex);
+                }
+            }
+        });
+        
         filter_name_button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String nameFilter = filter_name_input.getText();
-                if (nameFilter.isEmpty()) {
-                    JOptionPane.showMessageDialog(frame,
-                            "Please enter a name to filter!",
-                            "Empty Filter", JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-
-                Set<Item> filteredItems = ItemController.filter_by_name(nameFilter);
-                if (filteredItems.isEmpty()) {
-                    JOptionPane.showMessageDialog(frame,
-                            "No items found with name: " + nameFilter,
-                            "No Results", JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    // Open new frame with filtered results
-                    new FilterResultsFrame("Filter by Name: " + nameFilter, filteredItems);
+                try {
+                    String nameFilter = filter_name_input.getText().trim();
+                    if (nameFilter.isEmpty()) {
+                        JOptionPane.showMessageDialog(frame, 
+                            "Please enter a name to filter!", 
+                            "Empty Filter", 
+                            JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+                    
+                    Set<Item> filteredItems = ItemController.filter_by_name(nameFilter);
+                    if (filteredItems.isEmpty()) {
+                        JOptionPane.showMessageDialog(frame, 
+                            "No items found with name: \"" + nameFilter + "\"\n\nPlease check the spelling and try again.", 
+                            "No Results", 
+                            JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(frame, 
+                            "Filter applied successfully!\n\nFound " + filteredItems.size() + " item(s) with name: \"" + nameFilter + "\"", 
+                            "Filter Success", 
+                            JOptionPane.INFORMATION_MESSAGE);
+                        new FilterResultsFrame("Filter by Name: " + nameFilter, filteredItems);
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(frame, 
+                        "Error applying name filter: " + ex.getMessage() + "\n\nTODO: Add error logger", 
+                        "Filter Error", 
+                        JOptionPane.ERROR_MESSAGE);
+                    System.err.println("Error applying name filter: " + ex.getMessage());
+                    ex.printStackTrace();
+                    // TODO: Add ErrorLogger.log(ex);
                 }
             }
         });
-
-        // FILTER BY CATEGORY BUTTON
         filter_c_button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String categoryFilter = filter_c_input.getText().trim();
-                if (categoryFilter.isEmpty()) {
-                    JOptionPane.showMessageDialog(frame,
-                            "Please enter a category to filter!",
-                            "Empty Filter", JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-
-                Set<Item> filteredItems = ItemController.filter_by_category(categoryFilter);
-                if (filteredItems.isEmpty()) {
-                    JOptionPane.showMessageDialog(frame,
-                            "No items found in category: " + categoryFilter,
-                            "No Results", JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    // Open new frame with filtered results
-                    new FilterResultsFrame("Filter by Category: " + categoryFilter, filteredItems);
+                try {
+                    String categoryFilter = filter_c_input.getText().trim();
+                    if (categoryFilter.isEmpty()) {
+                        JOptionPane.showMessageDialog(frame, 
+                            "Please enter a category to filter!", 
+                            "Empty Filter", 
+                            JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+                    
+                    Set<Item> filteredItems = ItemController.filter_by_category(categoryFilter);
+                    if (filteredItems.isEmpty()) {
+                        JOptionPane.showMessageDialog(frame, 
+                            "No items found in category: \"" + categoryFilter + "\"\n\nPlease check the spelling and try again.", 
+                            "No Results", 
+                            JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(frame, 
+                            "Filter applied successfully!\n\nFound " + filteredItems.size() + " item(s) in category: \"" + categoryFilter + "\"", 
+                            "Filter Success", 
+                            JOptionPane.INFORMATION_MESSAGE);
+                        new FilterResultsFrame("Filter by Category: " + categoryFilter, filteredItems);
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(frame, 
+                        "Error applying category filter: " + ex.getMessage() + "\n\nTODO: Add error logger", 
+                        "Filter Error", 
+                        JOptionPane.ERROR_MESSAGE);
+                    System.err.println("Error applying category filter: " + ex.getMessage());
+                    ex.printStackTrace();
+                    // TODO: Add ErrorLogger.log(ex);
                 }
             }
         });
-
-        // FILTER BY STATE BUTTON
         filter_s_button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int selectedIndex = comboBox.getSelectedIndex();
-                String stateName = (String) comboBox.getSelectedItem();
-
-                Set<Item> filteredItems = ItemController.filter_by_state(selectedIndex);
-                if (filteredItems.isEmpty()) {
-                    JOptionPane.showMessageDialog(frame,
-                            "No items found with state: " + stateName,
-                            "No Results", JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    // Open new frame with filtered results
-                    new FilterResultsFrame("Filter by State: " + stateName, filteredItems);
+                try {
+                    int selectedIndex = comboBox.getSelectedIndex();
+                    String stateName = (String) comboBox.getSelectedItem();
+                    
+                    Set<Item> filteredItems = ItemController.filter_by_state(selectedIndex);
+                    if (filteredItems.isEmpty()) {
+                        JOptionPane.showMessageDialog(frame, 
+                            "No items found with state: \"" + stateName + "\"", 
+                            "No Results", 
+                            JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(frame, 
+                            "Filter applied successfully!\n\nFound " + filteredItems.size() + " item(s) with state: \"" + stateName + "\"", 
+                            "Filter Success", 
+                            JOptionPane.INFORMATION_MESSAGE);
+                        new FilterResultsFrame("Filter by State: " + stateName, filteredItems);
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(frame, 
+                        "Error applying state filter: " + ex.getMessage() + "\n\nTODO: Add error logger", 
+                        "Filter Error", 
+                        JOptionPane.ERROR_MESSAGE);
+                    System.err.println("Error applying state filter: " + ex.getMessage());
+                    ex.printStackTrace();
+                    // TODO: Add ErrorLogger.log(ex);
+                }
+            }
+        });
+        
+        save_items.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    int confirm = JOptionPane.showConfirmDialog(frame,
+                        "Save all items to file?\n\nThis will overwrite the existing file.",
+                        "Confirm Save", 
+                        JOptionPane.YES_NO_OPTION);
+                    
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        ItemController.save_to_file();
+                        JOptionPane.showMessageDialog(frame, 
+                            "Items saved to file successfully!\n\nTotal items saved: " + ItemController.items.size(), 
+                            "Save Successful", 
+                            JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(frame, 
+                            "Save operation cancelled.", 
+                            "Cancelled", 
+                            JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(frame, 
+                        "Error saving items to file: " + ex.getMessage() + "\n\nPlease check file permissions.\n\nTODO: Add error logger", 
+                        "Save Error", 
+                        JOptionPane.ERROR_MESSAGE);
+                    System.err.println("Error saving items to file: " + ex.getMessage());
+                    ex.printStackTrace();
+                    // TODO: Add ErrorLogger.log(ex);
                 }
             }
         });
@@ -304,7 +604,6 @@ public class ManageItems extends JFrame {
 }
 
 class FilterResultsFrame extends JFrame {
-
     FilterResultsFrame(String filterTitle, Set<Item> filteredItems) {
         setTitle("Filter Results - " + filterTitle);
         setSize(900, 600);
