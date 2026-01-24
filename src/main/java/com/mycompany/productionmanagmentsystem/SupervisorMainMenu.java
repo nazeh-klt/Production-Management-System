@@ -29,6 +29,10 @@ public class SupervisorMainMenu extends JFrame {
         productsBtn.setBounds(150, 210, 200, 40);
         add(productsBtn);
 
+        JButton logoutBtn = new JButton("Logout");
+        logoutBtn.setBounds(200, 270, 100, 30);
+        add(logoutBtn);
+
         inventoryBtn.addActionListener(e -> {
             dispose();
             new ManageItems();
@@ -46,6 +50,11 @@ public class SupervisorMainMenu extends JFrame {
                 "Info",
                 JOptionPane.INFORMATION_MESSAGE
             );
+        });
+
+        logoutBtn.addActionListener(e -> {
+            dispose();
+            new LogIn();
         });
 
         setVisible(true);
