@@ -1,7 +1,6 @@
 package com.mycompany.productionmanagmentsystem;
 
 import java.util.Map;
-import java.util.Date;
 import javax.swing.JOptionPane;
 
 public class Tasks implements Runnable {
