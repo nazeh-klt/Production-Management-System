@@ -1,7 +1,6 @@
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  */
-
 package com.mycompany.productionmanagmentsystem;
 
 import java.util.*;
@@ -15,13 +14,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class ProductionManagmentSystem  {
+public class ProductionManagmentSystem {
 
     public static void main(String[] args) {
         System.out.println("Hello World!");
-        
+
         ItemController.load_from_file();
-        
 
 //        ManageItems m = new ManageItems();
         LogIn l = new LogIn();
