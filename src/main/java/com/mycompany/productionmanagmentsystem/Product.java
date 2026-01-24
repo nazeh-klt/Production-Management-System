@@ -38,4 +38,8 @@ public class Product {
     public void add_full_hash(HashMap<Item, Integer> m) {
         required_items = m;
     }
+    
+    public HashMap<Item, Integer> getRequiredItems(){
+        return required_items;
+    }
 }

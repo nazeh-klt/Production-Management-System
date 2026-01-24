@@ -20,10 +20,6 @@ public class ProductionManagmentSystem {
         System.out.println("Hello World!");
 
         ItemController.load_from_file();
-
-        ManageItems m = new ManageItems();
-        m.setVisible(true);
-        //ManageTasks t = new ManageTasks();
-
+        LogIn l = new LogIn();
     }
 }
