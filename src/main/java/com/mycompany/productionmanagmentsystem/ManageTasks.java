@@ -32,10 +32,14 @@ public class ManageTasks extends JFrame {
         JButton start_task = new JButton("Start Task");
         start_task.setBounds(10, 130, 120, 30);
         this.add(start_task);
+        
+        JButton save_file = new JButton("Save file");
+        save_file.setBounds(10, 170, 150, 30);
+        this.add(save_file);
 
         // Filter by Production Line
         JLabel filter_line_label = new JLabel("Filter by Line:");
-        filter_line_label.setBounds(10, 180, 150, 25);
+        filter_line_label.setBounds(10, 220, 150, 25);
         this.add(filter_line_label);
 
         Vector<String> lineOptions = new Vector<>();
@@ -44,16 +48,16 @@ public class ManageTasks extends JFrame {
             lineOptions.add(pl.lineName);
         }
         JComboBox<String> filter_line_combo = new JComboBox<>(lineOptions);
-        filter_line_combo.setBounds(10, 210, 150, 30);
+        filter_line_combo.setBounds(10, 250, 150, 30);
         this.add(filter_line_combo);
 
         JButton filter_line_btn = new JButton("Filter");
-        filter_line_btn.setBounds(10, 245, 150, 30);
+        filter_line_btn.setBounds(10, 285, 150, 30);
         this.add(filter_line_btn);
 
         // Filter by Product
         JLabel filter_product_label = new JLabel("Filter by Product:");
-        filter_product_label.setBounds(10, 290, 150, 25);
+        filter_product_label.setBounds(10, 330, 150, 25);
         this.add(filter_product_label);
 
         Vector<String> productOptions = new Vector<>();
@@ -62,29 +66,29 @@ public class ManageTasks extends JFrame {
             productOptions.add(p.name);
         }
         JComboBox<String> filter_product_combo = new JComboBox<>(productOptions);
-        filter_product_combo.setBounds(10, 320, 150, 30);
+        filter_product_combo.setBounds(10, 360, 150, 30);
         this.add(filter_product_combo);
 
         JButton filter_product_btn = new JButton("Filter");
-        filter_product_btn.setBounds(10, 355, 150, 30);
+        filter_product_btn.setBounds(10, 395, 150, 30);
         this.add(filter_product_btn);
 
         // Filter by Status
         JLabel filter_status_label = new JLabel("Filter by Status:");
-        filter_status_label.setBounds(10, 400, 150, 25);
+        filter_status_label.setBounds(10, 440, 150, 25);
         this.add(filter_status_label);
 
         String[] statusOptions = {"All", "RUNNING", "COMPLETED", "ABORTED", "PENDING"};
         JComboBox<String> filter_status_combo = new JComboBox<>(statusOptions);
-        filter_status_combo.setBounds(10, 430, 150, 30);
+        filter_status_combo.setBounds(10, 470, 150, 30);
         this.add(filter_status_combo);
 
         JButton filter_status_btn = new JButton("Filter");
-        filter_status_btn.setBounds(10, 465, 150, 30);
+        filter_status_btn.setBounds(10, 505, 150, 30);
         this.add(filter_status_btn);
-
+        
         JButton back_btn = new JButton("Back to Menu");
-        back_btn.setBounds(10, 520, 150, 30);
+        back_btn.setBounds(10, 545, 150, 30);
         this.add(back_btn);
 
         // Create table with all tasks from all production lines
@@ -103,7 +107,6 @@ public class ManageTasks extends JFrame {
 
         this.setVisible(true);
 
-        // Add Task Button Action
         add_task.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -222,18 +225,7 @@ public class ManageTasks extends JFrame {
                                 Date startDate = new Date(startDay, startMonth, startYear);
                                 Date deadlineDate = new Date(deadlineDay, deadlineMonth, deadlineYear);
 
-                                // Get the next task ID based on all tasks in all production lines
-                                int nextTaskID = 1;
-                                for (ProductionLine pl : ProductionLineController.lines) {
-                                    for (Tasks t : pl.lineTasks) {
-                                        if (t.ID >= nextTaskID) {
-                                            nextTaskID = t.ID + 1;
-                                        }
-                                    }
-                                }
-
-                                ProductionLineController.add_tasks(lineID, nextTaskID, 
-                                    product, quantity, 0, startDate, deadlineDate, client, "PENDING");
+                                ProductionLineController.add_tasks(lineID, product, quantity, 0, startDate, deadlineDate, client, "PENDING");
 
                                 JOptionPane.showMessageDialog(addFrame, 
                                     "Task added successfully!", 
@@ -248,11 +240,13 @@ public class ManageTasks extends JFrame {
                                     "Invalid input! Please enter valid numbers.", 
                                     "Input Error", 
                                     JOptionPane.ERROR_MESSAGE);
+                                Logger.save_to_file(ex.getMessage());
                             } catch (Exception ex) {
                                 JOptionPane.showMessageDialog(addFrame, 
                                     "Error adding task: " + ex.getMessage(), 
                                     "Error", 
                                     JOptionPane.ERROR_MESSAGE);
+                                Logger.save_to_file(ex.getMessage());
                             }
                         }
                     });
@@ -261,11 +255,10 @@ public class ManageTasks extends JFrame {
                         "Error opening add task dialog: " + ex.getMessage(), 
                         "Error", 
                         JOptionPane.ERROR_MESSAGE);
+                    Logger.save_to_file(ex.getMessage());
                 }
             }
         });
-
-        // Delete Task
         delete_task.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -297,8 +290,231 @@ public class ManageTasks extends JFrame {
                 }
             }
         });
+        edit_task.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = table.getSelectedRow();
+                if (selectedRow == -1) {
+                    JOptionPane.showMessageDialog(frame, "Please select a task to edit!");
+                    return;
+                }
 
-        // Start Task
+                try {
+                    int taskID = Integer.parseInt(data2[selectedRow][0]);
+                    String lineName = data2[selectedRow][1];
+                    
+                    // Find the task
+                    Tasks task = null;
+                    ProductionLine taskLine = null;
+                    for (ProductionLine pl : ProductionLineController.lines) {
+                        if (pl.lineName.equals(lineName)) {
+                            taskLine = pl;
+                            for (Tasks t : pl.lineTasks) {
+                                if (t.ID == taskID) {
+                                    task = t;
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+
+                    if (task == null) {
+                        JOptionPane.showMessageDialog(frame, "Task not found!");
+                        return;
+                    }
+
+                    // Check if task is running or completed
+                    if (task.status.equals("RUNNING")) {
+                        JOptionPane.showMessageDialog(frame, 
+                            "Cannot edit a running task!", 
+                            "Edit Restricted", 
+                            JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+                    
+                    if (task.status.equals("COMPLETED")) {
+                        JOptionPane.showMessageDialog(frame, 
+                            "Cannot edit a completed task!", 
+                            "Edit Restricted", 
+                            JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+
+                    frame.dispose();
+                    final Tasks editTask = task;
+                    final ProductionLine originalLine = taskLine;
+
+                    JFrame editFrame = new JFrame("Edit Task - ID: " + taskID);
+                    editFrame.setSize(500, 550);
+                    editFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+                    editFrame.setLayout(new GridLayout(10, 2, 10, 10));
+
+                    // Production Line Selection
+                    editFrame.add(new JLabel("Production Line:"));
+                    Vector<String> lines = new Vector<>();
+                    for (ProductionLine pl : ProductionLineController.lines) {
+                        lines.add(pl.ID + " - " + pl.lineName);
+                    }
+                    JComboBox<String> lineCombo = new JComboBox<>(lines);
+                    lineCombo.setSelectedItem(originalLine.ID + " - " + originalLine.lineName);
+                    editFrame.add(lineCombo);
+
+                    // Product Selection
+                    editFrame.add(new JLabel("Product:"));
+                    Vector<String> products = new Vector<>();
+                    for (Product p : ProductController.products.keySet()) {
+                        products.add(p.id + " - " + p.name);
+                    }
+                    JComboBox<String> productCombo = new JComboBox<>(products);
+                    productCombo.setSelectedItem(editTask.product.id + " - " + editTask.product.name);
+                    editFrame.add(productCombo);
+
+                    // Required Quantity
+                    editFrame.add(new JLabel("Required Quantity:"));
+                    JTextField qtyField = new JTextField(String.valueOf(editTask.requiredQuantity));
+                    editFrame.add(qtyField);
+
+                    // Client Name
+                    editFrame.add(new JLabel("Client Name:"));
+                    JTextField clientField = new JTextField(editTask.clientName);
+                    editFrame.add(clientField);
+
+                    // Start Date
+                    editFrame.add(new JLabel("Start Date (DD):"));
+                    JTextField startDayField = new JTextField(String.valueOf(editTask.startDate.day));
+                    editFrame.add(startDayField);
+
+                    editFrame.add(new JLabel("Start Month (MM):"));
+                    JTextField startMonthField = new JTextField(String.valueOf(editTask.startDate.month));
+                    editFrame.add(startMonthField);
+
+                    editFrame.add(new JLabel("Start Year (YYYY):"));
+                    JTextField startYearField = new JTextField(String.valueOf(editTask.startDate.year));
+                    editFrame.add(startYearField);
+
+                    // Deadline Date
+                    editFrame.add(new JLabel("Deadline (DD):"));
+                    JTextField deadlineDayField = new JTextField(String.valueOf(editTask.deadlineDate.day));
+                    editFrame.add(deadlineDayField);
+
+                    editFrame.add(new JLabel("Deadline Month (MM):"));
+                    JTextField deadlineMonthField = new JTextField(String.valueOf(editTask.deadlineDate.month));
+                    editFrame.add(deadlineMonthField);
+
+                    editFrame.add(new JLabel("Deadline Year (YYYY):"));
+                    JTextField deadlineYearField = new JTextField(String.valueOf(editTask.deadlineDate.year));
+                    editFrame.add(deadlineYearField);
+
+                    JButton saveBtn = new JButton("Save Changes");
+                    editFrame.add(saveBtn);
+
+                    JButton cancelBtn = new JButton("Cancel");
+                    editFrame.add(cancelBtn);
+
+                    editFrame.setVisible(true);
+
+                    editFrame.addWindowListener(new java.awt.event.WindowAdapter() {
+                        @Override
+                        public void windowClosing(java.awt.event.WindowEvent e) {
+                            new ManageTasks();
+                            editFrame.dispose();
+                        }
+                    });
+
+                    cancelBtn.addActionListener(ev -> {
+                        new ManageTasks();
+                        editFrame.dispose();
+                    });
+
+                    saveBtn.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            try {
+                                String lineStr = (String) lineCombo.getSelectedItem();
+                                int newLineID = Integer.parseInt(lineStr.split(" - ")[0]);
+
+                                String productStr = (String) productCombo.getSelectedItem();
+                                int productID = Integer.parseInt(productStr.split(" - ")[0]);
+                                Product product = ProductController.find_by_id(productID);
+
+                                int quantity = Integer.parseInt(qtyField.getText().trim());
+                                String client = clientField.getText().trim();
+
+                                int startDay = Integer.parseInt(startDayField.getText().trim());
+                                int startMonth = Integer.parseInt(startMonthField.getText().trim());
+                                int startYear = Integer.parseInt(startYearField.getText().trim());
+
+                                int deadlineDay = Integer.parseInt(deadlineDayField.getText().trim());
+                                int deadlineMonth = Integer.parseInt(deadlineMonthField.getText().trim());
+                                int deadlineYear = Integer.parseInt(deadlineYearField.getText().trim());
+
+                                if (quantity <= 0) {
+                                    JOptionPane.showMessageDialog(editFrame, 
+                                        "Quantity must be positive!", 
+                                        "Validation Error", 
+                                        JOptionPane.WARNING_MESSAGE);
+                                    return;
+                                }
+
+                                if (client.isEmpty()) {
+                                    JOptionPane.showMessageDialog(editFrame, 
+                                        "Client name cannot be empty!", 
+                                        "Validation Error", 
+                                        JOptionPane.WARNING_MESSAGE);
+                                    return;
+                                }
+
+                                // Update task fields
+                                editTask.product = product;
+                                editTask.requiredQuantity = quantity;
+                                editTask.clientName = client;
+                                editTask.startDate = new Date(startDay, startMonth, startYear);
+                                editTask.deadlineDate = new Date(deadlineDay, deadlineMonth, deadlineYear);
+
+                                // Check if production line changed
+                                if (newLineID != originalLine.ID) {
+                                    // Remove from old line
+                                    originalLine.lineTasks.remove(editTask);
+                                    // Add to new line
+                                    ProductionLine newLine = ProductionLineController.find_by_ID(newLineID);
+                                    newLine.lineTasks.add(editTask);
+                                }
+
+                                JOptionPane.showMessageDialog(editFrame, 
+                                    "Task updated successfully!", 
+                                    "Success", 
+                                    JOptionPane.INFORMATION_MESSAGE);
+
+                                new ManageTasks();
+                                editFrame.dispose();
+
+                            } catch (NumberFormatException ex) {
+                                JOptionPane.showMessageDialog(editFrame, 
+                                    "Invalid input! Please enter valid numbers.", 
+                                    "Input Error", 
+                                    JOptionPane.ERROR_MESSAGE);
+                                Logger.save_to_file(ex.getMessage());
+                            } catch (Exception ex) {
+                                JOptionPane.showMessageDialog(editFrame, 
+                                    "Error updating task: " + ex.getMessage(), 
+                                    "Error", 
+                                    JOptionPane.ERROR_MESSAGE);
+                                Logger.save_to_file(ex.getMessage());
+                            }
+                        }
+                    });
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(frame, 
+                        "Error opening edit dialog: " + ex.getMessage(), 
+                        "Error", 
+                        JOptionPane.ERROR_MESSAGE);
+                    Logger.save_to_file(ex.getMessage());
+                }
+            }
+        });
+
         start_task.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -342,11 +558,43 @@ public class ManageTasks extends JFrame {
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(frame, 
                         "Error starting task: " + ex.getMessage());
+                    Logger.save_to_file(ex.getMessage());
+                }
+            }
+        });
+        save_file.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    int confirm = JOptionPane.showConfirmDialog(frame,
+                            "Save all items to file?\n\nThis will overwrite the existing file.",
+                            "Confirm Save",
+                            JOptionPane.YES_NO_OPTION);
+
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        ProductionLineController.save_file();
+                        JOptionPane.showMessageDialog(frame,
+                                "Production Lines saved to file successfully!\n\nTotal items saved: " + ProductionLineController.lines.size(),
+                                "Save Successful",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(frame,
+                                "Save operation cancelled.",
+                                "Cancelled",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(frame,
+                            "Error saving items to file: " + ex.getMessage() + "\n\nPlease check file permissions.\n\nTODO: Add error logger",
+                            "Save Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    System.err.println("Error saving items to file: " + ex.getMessage());
+                    Logger.save_to_file(ex.getMessage());
+                    // TODO: Add ErrorLogger.log(ex);
                 }
             }
         });
 
-        // Filter by Line
         filter_line_btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -365,8 +613,6 @@ public class ManageTasks extends JFrame {
                 }
             }
         });
-
-        // Filter by Product
         filter_product_btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -388,8 +634,6 @@ public class ManageTasks extends JFrame {
                 }
             }
         });
-
-        // Filter by Status
         filter_status_btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -411,7 +655,6 @@ public class ManageTasks extends JFrame {
             }
         });
 
-        // Back Button
         back_btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

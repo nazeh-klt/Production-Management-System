@@ -1,5 +1,7 @@
 package com.mycompany.productionmanagmentsystem;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.*;
 import java.util.ArrayList;
 
@@ -35,11 +37,14 @@ public class ManageProductionLines extends JFrame {
         JButton evaluation = new JButton("Evaluation Notes");
         evaluation.setBounds(10, 170, 180, 30);
         add(evaluation);
-        
+
+        JButton save_file = new JButton("Save file");
+        save_file.setBounds(10, 470, 150, 30);
+        this.add(save_file);
+
         JButton logout = new JButton("Logout");
         logout.setBounds(10, 520, 100, 30);
         add(logout);
-
 
         // ===== Table =====
         ArrayList<String[]> data = new ArrayList<>();
@@ -103,9 +108,9 @@ public class ManageProductionLines extends JFrame {
 
             save.addActionListener(ev -> {
                 ProductionLineController.addProductionLine(
-                    ProductionLine.last_id + 1,
-                    name_f.getText(),
-                    state_cb.getSelectedItem().toString()
+                        ProductionLine.last_id + 1,
+                        name_f.getText(),
+                        state_cb.getSelectedItem().toString()
                 );
                 add.dispose();
                 frame.dispose();
@@ -127,10 +132,10 @@ public class ManageProductionLines extends JFrame {
             int id = Integer.parseInt(table.getValueAt(row, 0).toString());
 
             int confirm = JOptionPane.showConfirmDialog(
-                frame,
-                "Are you sure you want to delete \"" + lineName + "\" production line?",
-                "Confirm Deletion",
-                JOptionPane.YES_NO_OPTION
+                    frame,
+                    "Are you sure you want to delete \"" + lineName + "\" production line?",
+                    "Confirm Deletion",
+                    JOptionPane.YES_NO_OPTION
             );
 
             if (confirm == JOptionPane.YES_OPTION) {
@@ -156,10 +161,10 @@ public class ManageProductionLines extends JFrame {
             cb.setSelectedItem(line.lineState);
 
             int result = JOptionPane.showConfirmDialog(
-                frame,
-                cb,
-                "Edit Line State",
-                JOptionPane.OK_CANCEL_OPTION
+                    frame,
+                    cb,
+                    "Edit Line State",
+                    JOptionPane.OK_CANCEL_OPTION
             );
 
             if (result == JOptionPane.OK_OPTION) {
@@ -173,18 +178,52 @@ public class ManageProductionLines extends JFrame {
             frame.dispose();
             new ManageProductionLines();
         });
-        
+
+        save_file.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    int confirm = JOptionPane.showConfirmDialog(frame,
+                            "Save all items to file?\n\nThis will overwrite the existing file.",
+                            "Confirm Save",
+                            JOptionPane.YES_NO_OPTION);
+
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        ProductionLineController.save_file();
+                        JOptionPane.showMessageDialog(frame,
+                                "Production Lines saved to file successfully!\n\nTotal items saved: " + ProductionLineController.lines.size(),
+                                "Save Successful",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(frame,
+                                "Save operation cancelled.",
+                                "Cancelled",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(frame,
+                            "Error saving items to file: " + ex.getMessage() + "\n\nPlease check file permissions.\n\nTODO: Add error logger",
+                            "Save Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    System.err.println("Error saving items to file: " + ex.getMessage());
+                    Logger.save_to_file(ex.getMessage());
+                    // TODO: Add ErrorLogger.log(ex);
+                }
+            }
+        });
+
         // ===== Logout =====
         logout.addActionListener(e -> {
             dispose();
             new LogIn();
         });
 
-
         // ===== Evaluation Notes =====
         evaluation.addActionListener(e -> {
             int row = table.getSelectedRow();
-            if (row == -1) return;
+            if (row == -1) {
+                return;
+            }
 
             int id = Integer.parseInt(table.getValueAt(row, 0).toString());
             ProductionLine line = ProductionLineController.find_by_ID(id);
@@ -192,7 +231,6 @@ public class ManageProductionLines extends JFrame {
         });
     }
 }
-
 
 class ManageProductionLineNotes extends JFrame {
 

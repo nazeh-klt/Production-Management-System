@@ -32,7 +32,6 @@ public class Product {
 
     public void add(int id, int min_req) {
         required_items.put(ItemController.find_by_id(id), min_req);
-
     }
 
     public void add_full_hash(HashMap<Item, Integer> m) {

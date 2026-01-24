@@ -6,6 +6,7 @@ import javax.swing.JOptionPane;
 public class Tasks implements Runnable {
 
     int ID;
+    static int last_id = -1;
     Product product;
     int requiredQuantity, achievedQuantity;
     String clientName;
@@ -23,6 +24,24 @@ public class Tasks implements Runnable {
                  String status) {
 
         this.ID = ID;
+        this.product = product;
+        this.requiredQuantity = requiredQuantity;
+        this.achievedQuantity = achievedQuantity;
+        this.clientName = clientName;
+        this.startDate = startDate;
+        this.deadlineDate = deadlineDate;
+        this.status = status;
+    }
+    
+    public Tasks(Product product,
+                 int requiredQuantity,
+                 int achievedQuantity,
+                 Date startDate,
+                 Date deadlineDate,
+                 String clientName,
+                 String status) {
+
+        this.ID = ++last_id;
         this.product = product;
         this.requiredQuantity = requiredQuantity;
         this.achievedQuantity = achievedQuantity;
@@ -97,6 +116,7 @@ public class Tasks implements Runnable {
             }
 
             achievedQuantity++;
+            
         }
 
         status = "COMPLETED";

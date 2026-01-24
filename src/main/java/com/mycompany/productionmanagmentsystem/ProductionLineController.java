@@ -27,23 +27,57 @@ public class ProductionLineController{
     }
     
     public static void load_from_file(){
-        try(BufferedReader br = new BufferedReader(new FileReader("productionlines.csv"))){
+        try(BufferedReader br = new BufferedReader(new FileReader("production_lines.csv"))){
             String line;
             while((line = br.readLine()) != null){
                 String[] rows = line.split(",");
                 lines.add(new ProductionLine(Integer.parseInt(rows[0]), rows[1], rows[2]));
             }
-        } catch(FileNotFoundException | ArrayIndexOutOfBoundsException | NullPointerException | SecurityException e){
-            e.getMessage();
         } catch(IOException e){
-            e.getMessage();
+            System.out.println(e.getMessage());
+        }
+        catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+        try(BufferedReader br = new BufferedReader(new FileReader("tasks.csv"))){
+            String line;
+            while((line = br.readLine()) != null){
+                String[] rows = line.split(",");
+                add_tasks(
+                        Integer.parseInt(rows[0]),
+                        Integer.parseInt(rows[1]),
+                        ProductController.find_by_id(Integer.parseInt(rows[2])),
+                        Integer.parseInt(rows[3]),
+                        Integer.parseInt(rows[4]),
+                        new Date(Integer.parseInt(rows[7]), Integer.parseInt(rows[8]), Integer.parseInt(rows[9])),
+                        new Date(Integer.parseInt(rows[10]), Integer.parseInt(rows[11]), Integer.parseInt(rows[12])),
+                        rows[5],
+                        rows[6]          
+                );
+            }
+        } catch(IOException e){
+            System.out.println(e.getMessage());
+        }
+        catch(Exception e){
+            System.out.println(e.getMessage());
         }
     }
     
     public static void save_file(){
-        try(BufferedWriter bw = new BufferedWriter(new FileWriter("production lines.csv"));){
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter("production_lines.csv"));){
             for(ProductionLine p: lines){
-                bw.write("/n" + p.ID + "," + p.lineName + "," + p.lineState);
+                bw.write(p.ID + "," + p.lineName + "," + p.lineState);
+                bw.write('\n');
+            }
+        } catch(IOException e){
+            e.getMessage();
+        } 
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter("tasks.csv"));){
+            for(ProductionLine p: lines){
+                for(var t:p.lineTasks){
+                    bw.write(p.ID + "," + t.ID +","+ t.product.id +","+ t.requiredQuantity+","+ t.achievedQuantity+","+ t.clientName+","+ t.status+","+t.startDate.day+","+t.startDate.month+","+t.startDate.year+","+t.deadlineDate.day+","+t.deadlineDate.month+","+t.deadlineDate.year);
+                    bw.write('\n');
+                }
             }
         } catch(IOException e){
             e.getMessage();
@@ -85,11 +119,12 @@ public class ProductionLineController{
         return lineTasks;
     }
     
-    //public static ArrayList<ProductionLine> find_task_product_for_line(Tasks task){
-      
-    //} 
     public static void add_tasks(int lineID, int ID, Product product, int quantity, int achievedQuantity, Date startDate, Date deadlineDate, String clientName, String status){      
-      find_by_ID(ID).lineTasks.add(new Tasks(ID, product, quantity, achievedQuantity, startDate, deadlineDate, clientName,status));
+      find_by_ID(lineID).lineTasks.add(new Tasks(ID, product, quantity, achievedQuantity, startDate, deadlineDate, clientName,status));
+    }   
+    
+    public static void add_tasks(int lineID, Product product, int quantity, int achievedQuantity, Date startDate, Date deadlineDate, String clientName, String status){      
+      find_by_ID(lineID).lineTasks.add(new Tasks(product, quantity, achievedQuantity, startDate, deadlineDate, clientName,status));
     }   
     
     public static HashSet<Product> get_products_by_line(int ID){
