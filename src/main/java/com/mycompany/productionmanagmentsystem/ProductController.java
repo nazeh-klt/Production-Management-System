@@ -30,7 +30,7 @@ public class ProductController {
             current_value = products.get(current_product);
             products.put(current_product, current_value + 1);
         } else {
-            products.put(new Product(name), 0);
+            products.put(new Product(name), 1);
         }
     }
 
@@ -48,7 +48,7 @@ public class ProductController {
             current_value = products.get(current_product);
             products.put(current_product, current_value + 1);
         } else {
-            products.put(new Product(id, name), 0);
+            products.put(new Product(id, name), 1);
         }
     }
 

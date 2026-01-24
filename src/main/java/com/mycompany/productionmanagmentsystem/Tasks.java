@@ -115,6 +115,9 @@ public class Tasks implements Runnable {
                 }
             }
 
+            synchronized(ProductController.products){
+                ProductController.add(product.name);
+            }
             achievedQuantity++;
             
         }
