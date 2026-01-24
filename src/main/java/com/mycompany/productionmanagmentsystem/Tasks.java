@@ -39,12 +39,14 @@ public class Tasks implements Runnable{
 
     @Override
     public void run() {
+        status = "running";
         int currentItemAmount;
         Scanner scan = new Scanner(System.in);
         while(achievedQuantity < requiredQuantity){
             for(Map.Entry<Item, Integer> i: product.required_items.entrySet()){
                 currentItemAmount = 0;
-                while(currentItemAmount < i.getValue()){
+                synchronized(i.getKey()) {
+                    while(currentItemAmount < i.getValue()){
                     i.getKey().available_amount--;
                     currentItemAmount++;
                     if(i.getKey().available_amount == i.getKey().least_allowed_amount){
@@ -78,7 +80,7 @@ public class Tasks implements Runnable{
                         }
                     }
                 }
-            }
+            } }
             achievedQuantity++;
             
         }
