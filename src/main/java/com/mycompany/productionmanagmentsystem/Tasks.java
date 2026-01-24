@@ -50,7 +50,6 @@ public class Tasks implements Runnable {
                 int needed = entry.getValue();
                 int used = 0;
 
-                // 🔒 synchronize on shared resource (Item)
                 synchronized (item) {
 
                     while (used < needed) {
@@ -70,7 +69,6 @@ public class Tasks implements Runnable {
                     }
                 }
 
-                // 🚨 Out of stock handling (Swing)
                 if (item.available_amount == 0) {
 
                     String[] options = {"Abort Task", "Wait"};
