@@ -57,15 +57,13 @@ public class ProductController {
     }
 
     public static void load_from_file() {
-        try (BufferedReader ProductReader = new BufferedReader(new FileReader("products.csv"));) {
+        try (BufferedReader ProductReader = new BufferedReader(new FileReader("products.csv"))) {
             String line;
             ProductReader.readLine();
             while ((line = ProductReader.readLine()) != null) {
                 String[] attributes = line.split(",");
                 add(Integer.parseInt(attributes[0]), attributes[1]);
-
             }
-
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -93,8 +91,9 @@ public class ProductController {
         try (BufferedWriter ProductWriter = new BufferedWriter(new FileWriter("products_items.csv"));) {
             ProductWriter.write("product_id, item_id, quant");
             for (Product product : products.keySet()) {
-                for(Item i:product.required_items.keySet())
+                for (Item i : product.required_items.keySet()) {
                     ProductWriter.write("\n" + product.id + "," + i.id + "," + product.required_items.get(i));
+                }
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());

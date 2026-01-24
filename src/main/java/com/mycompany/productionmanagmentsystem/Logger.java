@@ -8,20 +8,18 @@ import static com.mycompany.productionmanagmentsystem.User.users;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
-
 /**
  *
  * @author Admin
  */
 public class Logger {
-    
-        public static void save_to_file(String Error) {
+
+    public static void save_to_file(String Error) {
         try (BufferedWriter UserWriter = new BufferedWriter(new FileWriter("errors.csv"));) {
-                UserWriter.write(Error + ",");
-            
+            UserWriter.write(Error + ",");
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 }
-
