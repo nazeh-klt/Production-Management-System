@@ -35,6 +35,11 @@ public class ManageProductionLines extends JFrame {
         JButton evaluation = new JButton("Evaluation Notes");
         evaluation.setBounds(10, 170, 180, 30);
         add(evaluation);
+        
+        JButton logout = new JButton("Logout");
+        logout.setBounds(10, 520, 100, 30);
+        add(logout);
+
 
         // ===== Table =====
         ArrayList<String[]> data = new ArrayList<>();
@@ -168,6 +173,13 @@ public class ManageProductionLines extends JFrame {
             frame.dispose();
             new ManageProductionLines();
         });
+        
+        // ===== Logout =====
+        logout.addActionListener(e -> {
+            dispose();
+            new LogIn();
+        });
+
 
         // ===== Evaluation Notes =====
         evaluation.addActionListener(e -> {

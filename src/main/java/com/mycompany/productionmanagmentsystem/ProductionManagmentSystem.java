@@ -18,7 +18,8 @@ public class ProductionManagmentSystem {
 
     public static void main(String[] args) {
         System.out.println("Hello World!");
-
+        User.users.add(new User(0, "admin", "1111"));
+        User.users.add(new User(1, "manager", "1111"));
         ItemController.load_from_file();
         LogIn l = new LogIn();
     }

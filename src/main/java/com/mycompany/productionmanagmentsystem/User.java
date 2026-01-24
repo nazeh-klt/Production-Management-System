@@ -31,7 +31,7 @@ public class User {
 
     public static User login(String name, String password) {
         for (User user : users) {
-            if (user.name == name && user.password == password) {
+            if (user.name.equals(name) && user.password.equals(password)) {
                 return user;
             }
         }
