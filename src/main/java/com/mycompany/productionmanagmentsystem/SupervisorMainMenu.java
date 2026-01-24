@@ -15,6 +15,7 @@ public class SupervisorMainMenu extends JFrame {
 
         JLabel title = new JLabel("Select Management Section");
         title.setBounds(150, 30, 250, 30);
+        title.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 16));
         add(title);
 
         JButton inventoryBtn = new JButton("Inventory Management");
@@ -29,6 +30,10 @@ public class SupervisorMainMenu extends JFrame {
         productsBtn.setBounds(150, 210, 200, 40);
         add(productsBtn);
 
+        JButton logoutBtn = new JButton("Logout");
+        logoutBtn.setBounds(200, 270, 100, 30);
+        add(logoutBtn);
+
         inventoryBtn.addActionListener(e -> {
             dispose();
             new ManageItems();
@@ -40,12 +45,13 @@ public class SupervisorMainMenu extends JFrame {
         });
 
         productsBtn.addActionListener(e -> {
-            JOptionPane.showMessageDialog(
-                this,
-                "Products Management not implemented yet",
-                "Info",
-                JOptionPane.INFORMATION_MESSAGE
-            );
+            dispose();
+            new ManageProducts();
+        });
+
+        logoutBtn.addActionListener(e -> {
+            dispose();
+            new LogIn();
         });
 
         setVisible(true);
